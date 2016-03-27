@@ -26,9 +26,13 @@ urlpatterns = patterns('',
 	url(r'^success/$', views.success),
 	
 	url(r'^AddItem/$', views.AddItemForm),
+    
+    url(r'^AddCItem/$', views.AddCItemForm),
 	
 	url(r'^AddInStockBill/$', views.AddInStockBillForm),
 	
-	url(r'^inventoryQueryBootstrap/$',views.inventoryQueryBootstrap),
+	url(r'^inventoryQueryBootstrap/$',views.inventoryQueryBootstrap2),
+    
+    url(r'^rukuBootstrap/$',views.rukuBootstrap),
 
 )

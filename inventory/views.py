@@ -6,18 +6,25 @@ from django.http import HttpResponse,HttpResponseRedirect
 
 #from django.db import models
 
-from models import Item,InStockBill,Inventory,CVender,CColor,CInStockBill
+from models import Item,InStockBill,Inventory,CType,CVender,CColor,CInStockBill,CInventory
 
-from forms import ItemForm,InStockBillForm,CVenderForm,CColorForm,CInStockBillForm
+from forms import ItemForm,InStockBillForm,CTypeForm,CVenderForm,CColorForm,CInStockBillForm
 
 from biz import InventoryBiz,InStockBillBiz,CInventoryBiz,CInStockBillBiz
 
 from django.db import transaction
 
+import datetime
+
+import time
+
 def success(request):
 
 	return HttpResponse('success')
 	
+def signin(request):
+
+	return render_to_response('signin.html')
 	
 def AddItemForm(request):
 
@@ -143,56 +150,202 @@ def	inventoryQueryBootstrap(request):
 
 def AddCItemForm(request):
 
-	form1 = CVenderForm({})
-	form2 = CColorForm({})
+	form1 = CTypeForm({})
+	form2 = CVenderForm({})
+	form3 = CColorForm({})
 
 	if request.method == 'POST':
 
-		form1 = CVenderForm(request.POST)
-		form2 = CColorForm(request.POST)
+		form1 = CTypeForm(request.POST)
+		form2 = CVenderForm(request.POST)
+		form3 = CColorForm(request.POST)
 		success1 = ''
 		success2 = ''
-
+		success3 = ''
+		inventorys = None
+		
 		if form1.is_valid():
 
 			cd = form1.cleaned_data
+
+			cType = CType()
+
+			cType.CTypeName = cd['CTypeName']
+			
+			inventorys = CType.objects.filter(CTypeName__contains=cType.CTypeName)
+			
+			if (inventorys.count()==0):
+				cType.save()
+				success1 = '类型添加成功'
+			else:
+				success1 = '类型已存在！无需再添加！'
+					
+			form1 = CTypeForm()
+			form2 = CVenderForm()
+			form3 = CColorForm()
+
+			return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success1': success1},
+
+			context_instance = RequestContext(request))
+			
+		if form2.is_valid():
+
+			cd = form2.cleaned_data
 
 			cVender = CVender()
 
 			cVender.CVenderName = cd['CVenderName']
 
-			cVender.save()
+			inventorys = CVender.objects.filter(CVenderName__contains=cVender.CVenderName)
 			
-			success1 = '厂家名称添加成功'
+			if (inventorys.count()==0):
+				cVender.save()
+				success2 = '厂家添加成功'
+			else:
+				success2 = '厂家已存在！无需再添加！'
+			
+			form1 = CTypeForm()
+			form2 = CVenderForm()
+			form3 = CColorForm()
 
-			return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'success1': success1},
+			return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success2': success2},
 
 			context_instance = RequestContext(request))
 		
-		if form2.is_valid():
+		if form3.is_valid():
 
-			cd = form2.cleaned_data
+			cd = form3.cleaned_data
 
 			cColor = CColor()
 
 			cColor.CColorName = cd['CColorName']
 
-			cColor.save()
+			inventorys = CColor.objects.filter(CColorName__contains=cColor.CColorName)
 			
-			success2 = '颜色添加成功'
-
-			return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'success2': success2},
+			if (inventorys.count()==0):
+				cColor.save()
+				success3 = '颜色添加成功'
+			else:
+				success3 = '颜色已存在！无需再添加！'
+			
+			form1 = CTypeForm()
+			form2 = CVenderForm()
+			form3 = CColorForm()
+			
+			return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success3': success3},
 
 			context_instance = RequestContext(request))
 
 	else:
 
-		form = CVenderForm()
+		form1 = CTypeForm()
+		form2 = CVenderForm()
+		form3 = CColorForm()
 
-	return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2},
+	return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'form3': form3},
 
 			context_instance = RequestContext(request))
-	
+
+def DeleteCItemForm(request):
+
+	form1 = CTypeForm({})
+	form2 = CVenderForm({})
+	form3 = CColorForm({})
+
+	if request.method == 'POST':
+
+		form1 = CTypeForm(request.POST)
+		form2 = CVenderForm(request.POST)
+		form3 = CColorForm(request.POST)
+		success1 = ''
+		success2 = ''
+		success3 = ''
+		inventorys = None
+		
+		if form1.is_valid():
+
+			cd = form1.cleaned_data
+			
+			name = cd['CTypeName']
+			
+			try:
+				cType = CType.objects.get(CTypeName = name)		
+				inventorys = CInventory.objects.filter(CType__CTypeName__contains=name)
+				if (inventorys.count()==0):				
+					cType.delete()
+					success1 = '类型删除成功'
+				else:
+					success1 = '库存中有该类型的数据，无法删除！'
+			except:
+				success1 = '类型不存在！无需再删除！'
+					
+			form1 = CTypeForm()
+			form2 = CVenderForm()
+			form3 = CColorForm()
+
+			return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success1': success1},
+
+			context_instance = RequestContext(request))
+			
+		if form2.is_valid():
+
+			cd = form2.cleaned_data
+
+			name = cd['CVenderName']
+			
+			try:
+				cVender = CVender.objects.get(CVenderName = name)
+				inventorys = CInventory.objects.filter(CVender__CVenderName__contains=name)
+				if (inventorys.count()==0):				
+					cVender.delete()
+					success2 = '厂家删除成功'
+				else:
+					success2 = '库存中有该厂家的数据，无法删除！'
+			except:
+				success2 = '厂家不存在！无需再删除！'
+			
+			form1 = CTypeForm()
+			form2 = CVenderForm()
+			form3 = CColorForm()
+
+			return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success2': success2},
+
+			context_instance = RequestContext(request))
+		
+		if form3.is_valid():
+
+			cd = form3.cleaned_data
+
+			name = cd['CColorName']
+			
+			try:	
+				cColor = CColor.objects.get(CColorName = name)
+				inventorys = CInventory.objects.filter(CColor__CColorName__contains=name)
+				if (inventorys.count()==0):				
+					cColor.delete()
+					success3 = '颜色删除成功'
+				else:
+					success3 = '库存中有该颜色的数据，无法删除！'
+			except:
+				success3 = '颜色不存在！无需再删除！'
+			
+			form1 = CTypeForm()
+			form2 = CVenderForm()
+			form3 = CColorForm()
+			
+			return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success3': success3},
+
+			context_instance = RequestContext(request))
+
+	else:
+
+		form1 = CTypeForm()
+		form2 = CVenderForm()
+		form3 = CColorForm()
+
+	return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3},
+
+			context_instance = RequestContext(request))	
 @transaction.commit_on_success
 def	rukuBootstrap(request):
 	
@@ -201,9 +354,6 @@ def	rukuBootstrap(request):
 	cinStockBill = CInStockBill()
 	
 	success = ''
-	#cVenders = CVender.objects.all()
-	
-	#cColors = CColor.objects.all()
 
 	if request.method == 'POST':
 
@@ -213,8 +363,6 @@ def	rukuBootstrap(request):
 
 			cd = form.cleaned_data
 
-			#cinStockBill = CInStockBill()
-
 			cinStockBill.CInStockBillCode = cd['CInStockBillCode']
 
 			cinStockBill.CInStockDate = cd['CInStockDate']
@@ -222,6 +370,8 @@ def	rukuBootstrap(request):
 			cinStockBill.COperator = cd['COperator']
 
 			cinStockBill.CItemCode = cd['CItemCode']
+			
+			cinStockBill.CType = cd['CType']
 			
 			cinStockBill.CVender = cd['CVender']
 			
@@ -241,17 +391,18 @@ def	rukuBootstrap(request):
 			
 			cinStockBill.CSize_4XL = cd['CSize_4XL']
 			
+			billbiz = CInStockBillBiz()
+			
+			cinStockBill.CAmount = billbiz.getInStockBillAcount(cinStockBill) 
+			
 			biz = CInventoryBiz()
 			
 			biz.save(cinStockBill)
 			
-			billbiz = CInStockBillBiz()
-			
 			billbiz.save(cinStockBill)
-			#cinStockBill.save()
 			
 			success = '入库单添加成功'
-			
+				
 			return render_to_response('ruku.html', {'form': form,'success': success,'cinStockBill':cinStockBill},
 
 			context_instance = RequestContext(request))
@@ -264,16 +415,59 @@ def	rukuBootstrap(request):
 
 		,context_instance = RequestContext(request))
 	
+def is_valid_date(str):
+    '''判断是否是一个有效的日期字符串'''
+    try:
+        time.strptime(str, "%Y-%m-%d")
+        return True
+    except:
+        return False
+	
 def	inventoryQueryBootstrap2(request):
-	error=False
-	if 'q' in request.GET:
-		q = request.GET['q']
-		if len(q) > 20:
-			error = True        
+	error=''
+	totalAmount = 0
+	if 'CItemCode_q' in request.GET:
+		cItemCode_q = request.GET['CItemCode_q']
+		if len(cItemCode_q) > 20:
+			error = '货号长度错误！（<20）'        
 		else:
 			biz = CInventoryBiz()
-			inventorys =biz.getInventoryByItemName(q)
+			inventorys =biz.getInventoryByItemCode(cItemCode_q)
+			for inventory in inventorys:
+				totalAmount += inventory.CAmount
 			return render_to_response('inventoryQueryBootstrap2.html',
-										{'inventorys': inventorys, 'query': q, 'error': error})
+										{'inventorys': inventorys, 'query1': cItemCode_q, 'error': error, 'totalAmount':totalAmount})
 			#return render_to_response('inventoryQueryBootstrap.html')
-	return render_to_response('inventoryQueryBootstrap2.html')
+	if 'CVender_q' in request.GET:
+		cVender_q = request.GET['CVender_q']
+		if len(cVender_q) > 20:
+			error = '厂家名称长度错误！（<20）'       
+		else: 
+			biz = CInventoryBiz()
+			inventorys =biz.getInventoryByCVenderName(cVender_q)
+			for inventory in inventorys:
+				totalAmount += inventory.CAmount
+			return render_to_response('inventoryQueryBootstrap2.html',
+										{'inventorys': inventorys, 'query2': cVender_q, 'error': error,'totalAmount':totalAmount})
+	
+	return render_to_response('inventoryQueryBootstrap2.html',{'error': error})
+
+def	inStockBillQueryBootstrap(request):
+	error=''
+	totalAmount = 0
+	if 'Time_q' in request.GET:
+		time_q = request.GET['Time_q']
+		if  not is_valid_date(time_q):
+			error = '时间格式错误！（如：2016-03-27）'         
+		else:
+			billbiz =  CInStockBillBiz()
+			inStockBills =billbiz.getInStockBillByTime(time_q)
+			for inStockBill in inStockBills:
+				totalAmount += inStockBill.CAmount
+			return render_to_response('inStockBillQueryBootstrap.html',
+										{'inStockBills': inStockBills, 'query3': time_q, 'error': error,'totalAmount':totalAmount})
+	return render_to_response('inStockBillQueryBootstrap.html',{'error': error})
+
+def statisticalAnalysis(request):
+
+	return render_to_response('statisticalAnalysis.html')

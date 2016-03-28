@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>欢迎使用库存系统</title>
+    <title>欢迎使用库存管理系统</title>
 
     <!-- Bootstrap -->
     <!-- 新 Bootstrap 核心 CSS 文件 -->
@@ -28,7 +28,7 @@
        
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">首页</a></li>
+            <li class="active"><a href="../">首页</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right hidden-sm">
             <li><a href="#about">关于</a></li>            
@@ -39,24 +39,66 @@
 	
    <div class="container theme-showcase" role="main">
     <div class="jumbotron">
-        <h1>库存系统</h1>
+        <h1>库存管理系统</h1>
 		<p></p>
 		<p></p>
         <p>系统建设中，敬请期待！.</p>
       </div>
-	<center>
-    <div class="projects-header page-header">
-        <h2>请选择操作项:</h2>
+	 <center>
+	 
+     <div class="projects-header page-header">
+      <h2>请选择操作项:</h2>
       </div>
-      <p>
-        <button type="button" class="btn btn-lg btn-warning"><a href="../AddCItem">参数输入</button>
-      </p>
-      <p>
-        <button type="button" class="btn btn-lg btn-success"><a href="../rukuBootstrap">入单添加</button>
-      </p>
-      <p>
-        <button type="button" class="btn btn-lg btn-danger"><a href="../inventoryQueryBootstrap">库存查询</button>
-      </p>
-    </center>
+ 	</center>
+ 	 <div class="projects-header page-header">
+        <h1> </h1>
+     </div>
+     <div class="panel panel-info">
+	    <div class="panel-heading">
+	      <h3 class="panel-title">销售管理</h3>
+	    </div>
+	    <div class="panel-body">
+		 <button type="button" class="btn btn-lg btn-default"><a href="#">销售管理</a></button>			
+	    </div>
+     </div>
+     <div class="projects-header page-header">
+        <h1> </h1>
+     </div>
+     <div class="panel panel-primary">
+	    <div class="panel-heading">
+	      <h3 class="panel-title">进货管理</h3>
+	    </div>
+	    <div class="panel-body">
+		 <button type="button" class="btn btn-lg btn-default"><a href="../rukuBootstrap">进货管理</a></button>			
+	    </div>
+     </div>
+     <div class="projects-header page-header">
+        <h1> </h1>
+     </div>
+     <div class="panel panel-info">
+	    <div class="panel-heading">
+	      <h3 class="panel-title">查询管理</h3>
+	    </div>
+	    <div class="panel-body">
+		 <button type="button" class="btn btn-lg btn-default"><a href="../inventoryQueryBootstrap">库存查询</a></button>			
+	   
+		 <button type="button" class="btn btn-lg btn-default"><a href="../inStockBillQueryBootstrap">入单查询</a></button>			
+	   
+		 <button type="button" class="btn btn-lg btn-default"><a href="../statisticalAnalysis">统计分析</a></button>			
+	    </div>
+     </div>
+     <div class="projects-header page-header">
+        <h1> </h1>
+     </div>
+     <div class="panel panel-primary">
+	    <div class="panel-heading">
+	      <h3 class="panel-title">系统管理</h3>
+	    </div>
+	    <div class="panel-body">
+		 <button type="button" class="btn btn-lg btn-default"><a href="../AddCItem">参数添加</a></button>			
+	    
+		 <button type="button" class="btn btn-lg btn-default"><a href="../DeleteCItem">参数删除</a></button>			
+	    </div>
+     </div>
   </body>
 </html>

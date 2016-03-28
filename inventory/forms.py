@@ -1,6 +1,6 @@
 ﻿from django import forms
 
-from models import Item,CColor,CVender
+from models import Item,CColor,CVender,CType
 
 class ItemForm(forms.Form):
 
@@ -74,6 +74,17 @@ class InStockBillForm(forms.Form):
 
 		)
 	
+class CTypeForm(forms.Form):
+
+	CTypeName = forms.CharField(
+		
+		max_length = 12,
+		
+		label = u'类型:',
+		
+		error_messages={'required': u'必填项'},
+		)
+	
 class CVenderForm(forms.Form):
 
 	CVenderName = forms.CharField(
@@ -94,8 +105,7 @@ class CColorForm(forms.Form):
 		label = u'颜色:',
 		
 		error_messages={'required': u'必填项'},
-		)	
-
+		)
 
 class CInStockBillForm(forms.Form):
 
@@ -119,7 +129,9 @@ class CInStockBillForm(forms.Form):
 		
 		label = u'入库日期:',
 		
-		error_messages={'required': u'必填项'},
+		required = False,
+		
+		#error_messages={'required': u'必填项'},
 		)
 	
 	CItemCode = forms.CharField(
@@ -129,6 +141,16 @@ class CInStockBillForm(forms.Form):
 		label = u'货号:',
 		
 		error_messages={'required': u'必填项'},
+		)
+	
+	CType = forms.ModelChoiceField(
+		
+		label = u'类型:',
+		
+		queryset = CType.objects.all(),
+		
+		error_messages={'required': u'必填项'},
+		
 		)
 
 	CVender = forms.ModelChoiceField(
@@ -197,6 +219,13 @@ class CInStockBillForm(forms.Form):
 	CSize_4XL = forms.IntegerField(
 		
 		label = u'4XL:',
+		
+		required = False,
+		)
+	
+	CAmount = forms.IntegerField(
+		
+		label = u'总计:',
 		
 		required = False,
 		)

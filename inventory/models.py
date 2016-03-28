@@ -41,15 +41,19 @@ class CColor(models.Model):
 	
 	def __unicode__(self):  
 		return self.CColorName	
+
+class CType(models.Model):
+	CTypeId = models.AutoField(primary_key=True)
+	CTypeName = models.CharField(max_length=10)
 	
-class Meta:
-	ordering =['ItemCode']
-	ordering =['CVenderName']
-	ordering =['CColorName']
+	def __unicode__(self):  
+		return self.CTypeName
+	
 
 class CInventory (models.Model):
 	CInventoryId = models.AutoField(primary_key=True)
 	CItemCode = models.CharField(max_length=50)
+	CType = models.ForeignKey(CType, null=False)
 	CVender = models.ForeignKey(CVender, null=False)
 	CColor = models.ForeignKey(CColor, null=False)
 	CSize_S = models.IntegerField(null=True)
@@ -59,6 +63,7 @@ class CInventory (models.Model):
 	CSize_2XL = models.IntegerField(null=True)
 	CSize_3XL = models.IntegerField(null=True)
 	CSize_4XL = models.IntegerField(null=True)
+	CAmount = models.IntegerField(null=True)
 
 class CInStockBill(models.Model):
 	CInStockBillId = models.AutoField(primary_key=True)
@@ -66,6 +71,7 @@ class CInStockBill(models.Model):
 	CInStockDate = models.DateTimeField(null=True, auto_now=True)
 	COperator = models.CharField(max_length=40)
 	CItemCode = models.CharField(max_length=50)
+	CType = models.ForeignKey(CType, null=False)
 	CVender = models.ForeignKey(CVender, null=False)
 	CColor = models.ForeignKey(CColor, null=False)
 	CSize_S = models.IntegerField(null=True)
@@ -75,3 +81,11 @@ class CInStockBill(models.Model):
 	CSize_2XL = models.IntegerField(null=True)
 	CSize_3XL = models.IntegerField(null=True)
 	CSize_4XL = models.IntegerField(null=True)
+	CAmount = models.IntegerField(null=True)
+	
+class Meta:
+	ordering =['ItemCode']
+	ordering =['CVenderName']
+	ordering =['CColorName']
+	ordering =['CTypeName']
+	ordering =['CItemCode']

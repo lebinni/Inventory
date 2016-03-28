@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>商品入库</title>
+    <title>进货管理</title>
 
     <!-- Bootstrap -->
     <!-- 新 Bootstrap 核心 CSS 文件 -->
@@ -38,11 +38,14 @@
     </nav>
 	<div class="container theme-showcase" role="main">
     <div class="jumbotron">
-        <h1>商品入库</h1>
+        <h1>进货管理</h1>
         <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>
       </div>
-     
-	<h3>添加入库单：</h3>
+      <div class="projects-header page-header">
+      <h3>
+	<span class="label label-primary">添加入单:</span>
+	</h3>
+</div>
 	<style type="text/css">
 
 ul.errorlist {
@@ -70,6 +73,7 @@ ul.errorlist {
 }
 
 </style>
+<center>
 	<form class="form-inline" action="/rukuBootstrap/" method="post">
 
 
@@ -80,19 +84,27 @@ ul.errorlist {
 		{{ form.as_table }}
 		
 		</table>
-		
-		<button id="submit"  type="submit" class="btn btn-default" align="center">提交</button>
+		<p></p>
+		<p></p>
+		<button id="submit"  type="submit" class="btn btn-lg btn-default" align="center">提交</button>
 		<p style="color: red;">
 		{{success}}
 		</p>
 	</form>
-	<h3>添加列表：</h3>
+	</center>
+	<div class="projects-header page-header">
+	<h3>
+	<span class="label label-primary">当前列表:</span>
+	</h3>
+	</div>
+
 	<div class="row">
 			<div class="col-md-18">
 			  <table class="table" id="inventorysTable" data-cache="false">
 	   <thead>
 				  <tr>
 					<th>货号</th>
+					<th>类型</th>
 					<th>厂家</th>
 					<th>颜色</th>
 					<th>  S</th>
@@ -102,11 +114,13 @@ ul.errorlist {
 					<th>2XL</th>
 					<th>3XL</th>
 					<th>4XL</th>
+					<th>总计</th>
 				  </tr>
 				</thead>
 				<tbody>
                     <tr>
                     <td >{{cinStockBill.CItemCode}}</td>
+                    <td >{{inventory.CType}}</td>
                     <td >{{cinStockBill.CVender}}</td>
                     <td >{{cinStockBill.CColor}}</td>
                     <td >{{cinStockBill.CSize_S}}</td>
@@ -116,6 +130,7 @@ ul.errorlist {
                     <td >{{cinStockBill.CSize_2XL}}</td>
                     <td >{{cinStockBill.CSize_3XL}}</td>
                     <td >{{cinStockBill.CSize_4XL}}</td>
+                    <td >{{cinStockBill.CAmount}}</td>
                     </tr>
 				</tbody>
 	  </table>

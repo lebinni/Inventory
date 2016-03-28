@@ -53,20 +53,28 @@ class InStockBillBiz(object):
 
 class CInventoryBiz(object):		
 	def save(self,inStockBill):
-		currentInventory = self.getInventoryByItem(inStockBill.CItemCode)	
+		currentInventory = self.getInventoryByItem(inStockBill)	
 		self.updatingInventoryIn(inStockBill,currentInventory)
 		currentInventory.save()
 		
-	def getInventoryByItem(self,cItemCode):
-		if (cItemCode != None):
-			inventorys = CInventory.objects.filter(CItemCode__contains=cItemCode)
+	def getInventoryByItem(self,inStockBill):
+		if (inStockBill.CItemCode != None):
+			inventorys = CInventory.objects.filter(CItemCode__exact=inStockBill.CItemCode)
 			if (inventorys.count()==0):
 				currentInventory = CInventory()
 			else:
-				currentInventory = inventorys[0]
+				inventorys1 = inventorys.filter(CVender__exact=inStockBill.CVender)
+				if (inventorys1.count()==0):
+					currentInventory = CInventory()
+				else:
+					inventorys2 = inventorys1.filter(CColor__exact=inStockBill.CColor)
+					if (inventorys2.count()==0):
+						currentInventory = CInventory()
+					else:
+						currentInventory = inventorys2[0]
 		return currentInventory
 		
-	def getInventoryByItemName(self,cItemCode):
+	def getInventoryByItemCode(self,cItemCode):
 		inventorys = None
 		if cItemCode:
 			inventorys = CInventory.objects.filter(CItemCode__contains=cItemCode)
@@ -74,9 +82,19 @@ class CInventoryBiz(object):
 			inventorys = CInventory.objects.all()
 
 		return inventorys
+	
+	def getInventoryByCVenderName(self,cVenderName):
+		inventorys = None
+		if cVenderName:
+			inventorys = CInventory.objects.filter(CVender__CVenderName__contains=cVenderName)
+		else:
+			inventorys = CInventory.objects.all()
+
+		return inventorys
 		
 	def updatingInventoryIn(self,inStockBill,inventory):
 		if (inventory.CInventoryId == None):
+			inventory.CType = inStockBill.CType
 			inventory.CVender = inStockBill.CVender
 			inventory.CColor = inStockBill.CColor
 			inventory.CItemCode = inStockBill.CItemCode
@@ -87,6 +105,7 @@ class CInventoryBiz(object):
 			inventory.CSize_2XL = 0
 			inventory.CSize_3XL = 0
 			inventory.CSize_4XL = 0
+			inventory.CAmount = 0
 		if (inStockBill.CSize_S == None):
 			inStockBill.CSize_S = 0
 		if (inStockBill.CSize_M == None):
@@ -101,6 +120,8 @@ class CInventoryBiz(object):
 			inStockBill.CSize_3XL = 0
 		if (inStockBill.CSize_4XL == None):
 			inStockBill.CSize_4XL = 0
+		if (inStockBill.CAmount == None):
+			inStockBill.CAmount = 0
 		inventory.CSize_S = inventory.CSize_S + inStockBill.CSize_S
 		inventory.CSize_M = inventory.CSize_M + inStockBill.CSize_M
 		inventory.CSize_L = inventory.CSize_L + inStockBill.CSize_L
@@ -108,6 +129,7 @@ class CInventoryBiz(object):
 		inventory.CSize_2XL = inventory.CSize_2XL + inStockBill.CSize_2XL
 		inventory.CSize_3XL = inventory.CSize_3XL + inStockBill.CSize_3XL
 		inventory.CSize_4XL = inventory.CSize_4XL + inStockBill.CSize_4XL
+		inventory.CAmount = inventory.CAmount + inStockBill.CAmount
 		
 class CInStockBillBiz(object):		
 	def save(self,inStockBill):
@@ -126,7 +148,34 @@ class CInStockBillBiz(object):
 		validMsg = ''
 		if not inStockBill.CInStockBillCode:
 			validMsg = validMsg + '入库单编号不能为空！'            
-		if not inStockBill.CInStockDate:
-			validMsg = validMsg + '入库单时间不能为空！'
+		#if not inStockBill.CInStockDate:
+		#	validMsg = validMsg + '入库单时间不能为空！'
 		return validMsg
+	
+	def getInStockBillByTime(self,currentTime):
+		inStockBills = None
+		if currentTime:
+			inStockBills = CInStockBill.objects.filter(CInStockDate__contains=currentTime)
+
+		return inStockBills
+	
+	def getInStockBillAcount(self,inStockBill):
+		if (inStockBill.CSize_S == None):
+			inStockBill.CSize_S = 0
+		if (inStockBill.CSize_M == None):
+			inStockBill.CSize_M = 0
+		if (inStockBill.CSize_L == None):
+			inStockBill.CSize_L = 0
+		if (inStockBill.CSize_XL == None):
+			inStockBill.CSize_XL = 0
+		if (inStockBill.CSize_2XL == None):
+			inStockBill.CSize_2XL = 0
+		if (inStockBill.CSize_3XL == None):
+			inStockBill.CSize_3XL = 0
+		if (inStockBill.CSize_4XL == None):
+			inStockBill.CSize_4XL = 0
+			
+		totalAmount =  inStockBill.CSize_S + inStockBill.CSize_M + inStockBill.CSize_L + inStockBill.CSize_XL + inStockBill.CSize_2XL + inStockBill.CSize_3XL + inStockBill.CSize_4XL
+		
+		return totalAmount
 	

@@ -52,10 +52,18 @@ class InStockBillBiz(object):
 		return validMsg
 
 class CInventoryBiz(object):		
-	def save(self,inStockBill):
+	def saveForIn(self,inStockBill):
 		currentInventory = self.getInventoryByItem(inStockBill)	
 		self.updatingInventoryIn(inStockBill,currentInventory)
 		currentInventory.save()
+		
+	def saveForOut(self,outStockBill):
+		currentInventory = self.getInventoryByItem(outStockBill)	
+		if self.updatingInventoryOut(outStockBill,currentInventory):			
+			currentInventory.save()
+			return True
+		else:
+			return False
 		
 	def getInventoryByItem(self,inStockBill):
 		if (inStockBill.CItemCode != None):
@@ -131,6 +139,77 @@ class CInventoryBiz(object):
 		inventory.CSize_4XL = inventory.CSize_4XL + inStockBill.CSize_4XL
 		inventory.CAmount = inventory.CAmount + inStockBill.CAmount
 		
+	def updatingInventoryOut(self,outStockBill,inventory):
+		if (inventory.CInventoryId == None):
+			inventory.CType = outStockBill.CType
+			inventory.CVender = outStockBill.CVender
+			inventory.CColor = outStockBill.CColor
+			inventory.CItemCode = outStockBill.CItemCode
+			inventory.CSize_S = 0
+			inventory.CSize_M = 0
+			inventory.CSize_L = 0
+			inventory.CSize_XL = 0
+			inventory.CSize_2XL = 0
+			inventory.CSize_3XL = 0
+			inventory.CSize_4XL = 0
+			inventory.CAmount = 0
+		if (outStockBill.CSize_S == None):
+			outStockBill.CSize_S = 0
+		if (outStockBill.CSize_M == None):
+			outStockBill.CSize_M = 0
+		if (outStockBill.CSize_L == None):
+			outStockBill.CSize_L = 0
+		if (outStockBill.CSize_XL == None):
+			outStockBill.CSize_XL = 0
+		if (outStockBill.CSize_2XL == None):
+			outStockBill.CSize_2XL = 0
+		if (outStockBill.CSize_3XL == None):
+			outStockBill.CSize_3XL = 0
+		if (outStockBill.CSize_4XL == None):
+			outStockBill.CSize_4XL = 0
+		if (outStockBill.CAmount == None):
+			outStockBill.CAmount = 0
+		if (inventory.CSize_S >= outStockBill.CSize_S):
+			inventory.CSize_S = inventory.CSize_S - outStockBill.CSize_S
+		else:
+			return False
+		
+		if (inventory.CSize_M >= outStockBill.CSize_M):
+			inventory.CSize_M = inventory.CSize_M - outStockBill.CSize_M
+		else:
+			return False
+		
+		if (inventory.CSize_L >= outStockBill.CSize_L):
+			inventory.CSize_L = inventory.CSize_L - outStockBill.CSize_L
+		else:
+			return False
+		
+		if (inventory.CSize_XL >= outStockBill.CSize_XL):
+			inventory.CSize_XL = inventory.CSize_XL - outStockBill.CSize_XL
+		else:
+			return False
+		
+		if (inventory.CSize_2XL >= outStockBill.CSize_2XL):
+			inventory.CSize_2XL = inventory.CSize_2XL - outStockBill.CSize_2XL
+		else:
+			return False
+		
+		if (inventory.CSize_3XL >= outStockBill.CSize_3XL):
+			inventory.CSize_3XL = inventory.CSize_3XL - outStockBill.CSize_3XL
+		else:
+			return False
+		
+		if (inventory.CSize_4XL >= outStockBill.CSize_4XL):
+			inventory.CSize_4XL = inventory.CSize_4XL - outStockBill.CSize_4XL
+		else:
+			return False
+		if (inventory.CAmount >= outStockBill.CAmount):
+			inventory.CAmount = inventory.CAmount - outStockBill.CAmount
+		else:
+			return False
+		
+		return True
+	
 class CInStockBillBiz(object):		
 	def save(self,inStockBill):
 		validMsg = ''
@@ -178,4 +257,51 @@ class CInStockBillBiz(object):
 		totalAmount =  inStockBill.CSize_S + inStockBill.CSize_M + inStockBill.CSize_L + inStockBill.CSize_XL + inStockBill.CSize_2XL + inStockBill.CSize_3XL + inStockBill.CSize_4XL
 		
 		return totalAmount
+
+class COutStockBillBiz(object):		
+	def save(self,outStockBill):
+		validMsg = ''
+		try:
+			validMsg = self.validBeforeSave(outStockBill)
+			if validMsg != '':
+				raise "ValidationException", validMsg
+			outStockBill.save()
+		except "ValidationException", arg:
+			raise "ValidationException", arg
+		except Exception, e:
+			raise Exception(e)
+			
+	def validBeforeSave(self, outStockBill):
+		validMsg = ''
+		if not outStockBill.COutStockBillCode:
+			validMsg = validMsg + '出库单编号不能为空！'            
+		#if not outStockBill.COutStockDate:
+		#	validMsg = validMsg + '入库单时间不能为空！'
+		return validMsg
 	
+	def getOutStockBillByTime(self,currentTime):
+		outStockBills = None
+		if currentTime:
+			outStockBills = COutStockBill.objects.filter(COutStockDate__contains=currentTime)
+
+		return outStockBills
+	
+	def getInStockBillAcount(self,outStockBill):
+		if (outStockBill.CSize_S == None):
+			outStockBill.CSize_S = 0
+		if (outStockBill.CSize_M == None):
+			outStockBill.CSize_M = 0
+		if (outStockBill.CSize_L == None):
+			outStockBill.CSize_L = 0
+		if (outStockBill.CSize_XL == None):
+			outStockBill.CSize_XL = 0
+		if (outStockBill.CSize_2XL == None):
+			outStockBill.CSize_2XL = 0
+		if (outStockBill.CSize_3XL == None):
+			outStockBill.CSize_3XL = 0
+		if (outStockBill.CSize_4XL == None):
+			outStockBill.CSize_4XL = 0
+			
+		totalAmount =  outStockBill.CSize_S + outStockBill.CSize_M + outStockBill.CSize_L + outStockBill.CSize_XL + outStockBill.CSize_2XL + outStockBill.CSize_3XL + outStockBill.CSize_4XL
+		
+		return totalAmount

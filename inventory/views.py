@@ -6,11 +6,11 @@ from django.http import HttpResponse,HttpResponseRedirect
 
 #from django.db import models
 
-from models import Item,InStockBill,Inventory,CType,CVender,CColor,CInStockBill,CInventory
+from models import Item,InStockBill,Inventory,CType,CVender,CColor,CInStockBill,CInventory,COutStockBill
 
-from forms import ItemForm,InStockBillForm,CTypeForm,CVenderForm,CColorForm,CInStockBillForm
+from forms import ItemForm,InStockBillForm,CTypeForm,CVenderForm,CColorForm,CInStockBillForm,ChangepwdForm,COutStockBillForm
 
-from biz import InventoryBiz,InStockBillBiz,CInventoryBiz,CInStockBillBiz
+from biz import InventoryBiz,InStockBillBiz,CInventoryBiz,CInStockBillBiz,COutStockBillBiz
 
 from django.db import transaction
 
@@ -18,13 +18,75 @@ import datetime
 
 import time
 
+from django.shortcuts import render_to_response,render,get_object_or_404    
+from django.http import HttpResponse, HttpResponseRedirect    
+from django.contrib.auth.models import User    
+from django.contrib import auth  
+from django.contrib import messages  
+from django.template.context import RequestContext  
+  
+from django.forms.formsets import formset_factory  
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage  
+  
+from bootstrap_toolkit.widgets import BootstrapUneditableInput  
+from django.contrib.auth.decorators import login_required  
+  
+from .forms import LoginForm  
+
+
+  
+def login(request):  
+    if request.method == 'GET':  
+        form = LoginForm()  
+        return render_to_response('login.html', RequestContext(request, {'form': form}))  
+    else:  
+        form = LoginForm(request.POST)  
+        if form.is_valid():  
+            username = request.POST.get('username', '')  
+            password = request.POST.get('password', '')  
+            user = auth.authenticate(username=username, password=password)  
+            if user is not None and user.is_active:  
+                auth.login(request, user)  
+                return render_to_response('index.html', RequestContext(request))  
+            else:  
+                return render_to_response('login.html', RequestContext(request, {'form': form,'password_is_wrong':True}))  
+        else:  
+            return render_to_response('login.html', RequestContext(request, {'form': form,}))
+           
+@login_required(login_url='/login/')   
+def logout(request):  
+    auth.logout(request)  
+    return HttpResponseRedirect("/login/") 
+   
+@login_required  
+def changepwd(request):  
+    if request.method == 'GET':  
+        form = ChangepwdForm()  
+        return render_to_response('changepwd.html', RequestContext(request, {'form': form,}))  
+    else:  
+        form = ChangepwdForm(request.POST)  
+        if form.is_valid():  
+            username = request.user.username  
+            oldpassword = request.POST.get('oldpassword', '')  
+            user = auth.authenticate(username=username, password=oldpassword)  
+            if user is not None and user.is_active:  
+                newpassword = request.POST.get('newpassword1', '')  
+                user.set_password(newpassword)  
+                user.save()  
+                return render_to_response('index.html', RequestContext(request,{'changepwd_success':True}))  
+            else:  
+                return render_to_response('changepwd.html', RequestContext(request, {'form': form,'oldpassword_is_wrong':True}))  
+        else:  
+            return render_to_response('changepwd.html', RequestContext(request, {'form': form,})) 
+
 def success(request):
 
 	return HttpResponse('success')
-	
-def signin(request):
 
-	return render_to_response('signin.html')
+@login_required(login_url='/login/')	
+def index(request):
+
+	return render_to_response('index.html')
 	
 def AddItemForm(request):
 
@@ -148,6 +210,7 @@ def	inventoryQueryBootstrap(request):
 			#return render_to_response('inventoryQueryBootstrap.html')
 	return render_to_response('inventoryQueryBootstrap.html')
 
+@login_required(login_url='/login/')  
 def AddCItemForm(request):
 
 	form1 = CTypeForm({})
@@ -246,6 +309,7 @@ def AddCItemForm(request):
 
 			context_instance = RequestContext(request))
 
+@login_required(login_url='/login/') 
 def DeleteCItemForm(request):
 
 	form1 = CTypeForm({})
@@ -346,8 +410,10 @@ def DeleteCItemForm(request):
 	return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3},
 
 			context_instance = RequestContext(request))	
+	
+@login_required(login_url='/login/') 
 @transaction.commit_on_success
-def	rukuBootstrap(request):
+def	inBillBootstrap(request):
 	
 	form = CInStockBillForm({})
 	
@@ -397,13 +463,11 @@ def	rukuBootstrap(request):
 			
 			biz = CInventoryBiz()
 			
-			biz.save(cinStockBill)
-			
-			billbiz.save(cinStockBill)
-			
-			success = '入库单添加成功'
+			biz.saveForIn(cinStockBill)
 				
-			return render_to_response('ruku.html', {'form': form,'success': success,'cinStockBill':cinStockBill},
+			billbiz.save(cinStockBill)
+				
+			return render_to_response('inStock.html', {'form': form,'success': success,'cinStockBill':cinStockBill},
 
 			context_instance = RequestContext(request))
 
@@ -411,7 +475,78 @@ def	rukuBootstrap(request):
 
 		form = CInStockBillForm()
 
-	return render_to_response('ruku.html',{'form':form,'success': success,'cinStockBill':cinStockBill}
+	return render_to_response('inStock.html',{'form':form,'success': success,'cinStockBill':cinStockBill}
+
+		,context_instance = RequestContext(request))
+	
+@login_required(login_url='/login/') 
+@transaction.commit_on_success
+def	outBillBootstrap(request):
+	
+	form = COutStockBillForm({})
+	
+	outStockBill = COutStockBill()
+	
+	success = ''
+
+	if request.method == 'POST':
+
+		form = COutStockBillForm(request.POST)
+
+		if form.is_valid():
+
+			cd = form.cleaned_data
+
+			outStockBill.COutStockBillCode = cd['COutStockBillCode']
+
+			outStockBill.COutStockDate = cd['COutStockDate']
+
+			outStockBill.COperator = cd['COperator']
+
+			outStockBill.CItemCode = cd['CItemCode']
+			
+			outStockBill.CType = cd['CType']
+			
+			outStockBill.CVender = cd['CVender']
+			
+			outStockBill.CColor = cd['CColor']
+			
+			outStockBill.CSize_S = cd['CSize_S']
+			
+			outStockBill.CSize_M = cd['CSize_M']
+			
+			outStockBill.CSize_L = cd['CSize_L']
+			
+			outStockBill.CSize_XL = cd['CSize_XL']
+			
+			outStockBill.CSize_2XL = cd['CSize_2XL']
+			
+			outStockBill.CSize_3XL = cd['CSize_3XL']
+			
+			outStockBill.CSize_4XL = cd['CSize_4XL']
+			
+			billbiz = COutStockBillBiz()
+			
+			outStockBill.CAmount = billbiz.getInStockBillAcount(outStockBill) 
+			
+			biz = CInventoryBiz()
+			
+			if biz.saveForOut(outStockBill):
+			
+				billbiz.save(outStockBill)
+				success = '出库单添加成功'
+			else:
+				success = '库存不足，无法出单'
+				
+			return render_to_response('outStock.html', {'form': form,'success': success,'outStockBill':outStockBill},
+
+			context_instance = RequestContext(request))
+
+	else:
+
+		form = COutStockBillForm()
+
+	return render_to_response('outStock.html',{'form':form,'success': success,'outStockBill':outStockBill}
 
 		,context_instance = RequestContext(request))
 	
@@ -422,7 +557,8 @@ def is_valid_date(str):
         return True
     except:
         return False
-	
+
+@login_required(login_url='/login/') 	
 def	inventoryQueryBootstrap2(request):
 	error=''
 	totalAmount = 0
@@ -452,6 +588,7 @@ def	inventoryQueryBootstrap2(request):
 	
 	return render_to_response('inventoryQueryBootstrap2.html',{'error': error})
 
+@login_required(login_url='/login/') 
 def	inStockBillQueryBootstrap(request):
 	error=''
 	totalAmount = 0
@@ -468,6 +605,25 @@ def	inStockBillQueryBootstrap(request):
 										{'inStockBills': inStockBills, 'query3': time_q, 'error': error,'totalAmount':totalAmount})
 	return render_to_response('inStockBillQueryBootstrap.html',{'error': error})
 
+@login_required(login_url='/login/') 
+def	outStockBillQueryBootstrap(request):
+	error=''
+	totalAmount = 0
+	if 'Time_q' in request.GET:
+		time_q = request.GET['Time_q']
+		if  not is_valid_date(time_q):
+			error = '时间格式错误！（如：2016-03-27）'         
+		else:
+			billbiz =  COutStockBillBiz()
+			outStockBills =billbiz.getOutStockBillByTime(time_q)
+			for outStockBill in outStockBills:
+				totalAmount += outStockBill.CAmount
+			return render_to_response('outStockBillQueryBootstrap.html',
+										{'stockBills': outStockBills, 'query3': time_q, 'error': error,'totalAmount':totalAmount})
+	return render_to_response('outStockBillQueryBootstrap.html',{'error': error})
+
+@login_required(login_url='/login/') 
 def statisticalAnalysis(request):
 
+	
 	return render_to_response('statisticalAnalysis.html')

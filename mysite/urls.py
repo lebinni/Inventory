@@ -11,7 +11,7 @@ from inventory import views
 urlpatterns = patterns('',
     # Examples:
     
-	url(r'^$', TemplateView.as_view(template_name='index.html'), name="home"),
+	url(r'^$', views.login, name="home"),
     
     # url(r'^mysite/', include('mysite.foo.urls')),
 
@@ -22,6 +22,14 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 	
 	# url(r'^admin/', include(admin.site.urls)),
+    
+    url(r'^index/$',  views.index),
+    
+    url(r'^login/$',  views.login), 
+    
+    url(r'^logout/$',  views.logout),
+    
+    url(r'^changepwd/$',  views.changepwd),  
 
 	url(r'^success/$', views.success),
 	
@@ -37,7 +45,11 @@ urlpatterns = patterns('',
     
     url(r'^inStockBillQueryBootstrap/$',views.inStockBillQueryBootstrap),
     
-    url(r'^rukuBootstrap/$',views.rukuBootstrap),
+    url(r'^outStockBillQueryBootstrap/$',views.outStockBillQueryBootstrap),
+    
+    url(r'^inBillBootstrap/$',views.inBillBootstrap),
+    
+    url(r'^outBillBootstrap/$',views.outBillBootstrap),
     
     url(r'^statisticalAnalysis/$',views.statisticalAnalysis),
 

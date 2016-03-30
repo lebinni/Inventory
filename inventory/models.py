@@ -1,106 +1,85 @@
 ﻿from django.db import models
 
 # Create your models here.
-
-class Item(models.Model):
-	ItemId = models.AutoField(primary_key=True)
-	ItemCode = models.CharField(max_length=50)
-	ItemName = models.CharField(max_length=50)
-	Remark = models.CharField(max_length=200)
-
+class Vender(models.Model):
+	VenderId = models.AutoField(primary_key=True)
+	VenderName = models.CharField(max_length=10)
+	
 	def __unicode__(self):  
-		return self.ItemName
+		return self.VenderName
+	class Meta:
+		ordering =['VenderName']	
+	
+class Color(models.Model):
+	ColorId = models.AutoField(primary_key=True)
+	ColorName = models.CharField(max_length=10)
+	
+	def __unicode__(self):  
+		return self.ColorName	
+	class Meta:
+		ordering =['ColorName']	
 
-
-
+class Type(models.Model):
+	TypeId = models.AutoField(primary_key=True)
+	TypeName = models.CharField(max_length=10)
+	
+	def __unicode__(self):  
+		return self.TypeName
+	class Meta:
+		ordering =['TypeName']	
+	
 
 class Inventory (models.Model):
 	InventoryId = models.AutoField(primary_key=True)
-	Item = models.ForeignKey(Item, null=False)
+	ItemCode = models.CharField(max_length=50)
+	Type = models.ForeignKey(Type, null=False)
+	Vender = models.ForeignKey(Vender, null=False)
+	Color = models.ForeignKey(Color, null=False)
+	Size_S = models.IntegerField(null=True)
+	Size_M = models.IntegerField(null=True)
+	Size_L = models.IntegerField(null=True)
+	Size_XL = models.IntegerField(null=True)
+	Size_2XL = models.IntegerField(null=True)
+	Size_3XL = models.IntegerField(null=True)
+	Size_4XL = models.IntegerField(null=True)
 	Amount = models.IntegerField(null=True)
-
+	
+	class Meta:
+		ordering =['Vender','ItemCode','Color']		
 
 class InStockBill(models.Model):
 	InStockBillId = models.AutoField(primary_key=True)
 	InStockBillCode = models.CharField(max_length=40)
 	InStockDate = models.DateTimeField(null=True, auto_now=True)
 	Operator = models.CharField(max_length=40)
-	Item = models.ForeignKey(Item, null=False)
+	ItemCode = models.CharField(max_length=50)
+	Type = models.ForeignKey(Type, null=False)
+	Vender = models.ForeignKey(Vender, null=False)
+	Color = models.ForeignKey(Color, null=False)
+	Size_S = models.IntegerField(null=True)
+	Size_M = models.IntegerField(null=True)
+	Size_L = models.IntegerField(null=True)
+	Size_XL = models.IntegerField(null=True)
+	Size_2XL = models.IntegerField(null=True)
+	Size_3XL = models.IntegerField(null=True)
+	Size_4XL = models.IntegerField(null=True)
 	Amount = models.IntegerField(null=True)
 	
-class CVender(models.Model):
-	CVenderId = models.AutoField(primary_key=True)
-	CVenderName = models.CharField(max_length=10)
-	
-	def __unicode__(self):  
-		return self.CVenderName
-	
-class CColor(models.Model):
-	CColorId = models.AutoField(primary_key=True)
-	CColorName = models.CharField(max_length=10)
-	
-	def __unicode__(self):  
-		return self.CColorName	
-
-class CType(models.Model):
-	CTypeId = models.AutoField(primary_key=True)
-	CTypeName = models.CharField(max_length=10)
-	
-	def __unicode__(self):  
-		return self.CTypeName
-	
-
-class CInventory (models.Model):
-	CInventoryId = models.AutoField(primary_key=True)
-	CItemCode = models.CharField(max_length=50)
-	CType = models.ForeignKey(CType, null=False)
-	CVender = models.ForeignKey(CVender, null=False)
-	CColor = models.ForeignKey(CColor, null=False)
-	CSize_S = models.IntegerField(null=True)
-	CSize_M = models.IntegerField(null=True)
-	CSize_L = models.IntegerField(null=True)
-	CSize_XL = models.IntegerField(null=True)
-	CSize_2XL = models.IntegerField(null=True)
-	CSize_3XL = models.IntegerField(null=True)
-	CSize_4XL = models.IntegerField(null=True)
-	CAmount = models.IntegerField(null=True)
-	
-	class Meta:
-		ordering =['CItemCode']		
-
-class CInStockBill(models.Model):
-	CInStockBillId = models.AutoField(primary_key=True)
-	CInStockBillCode = models.CharField(max_length=40)
-	CInStockDate = models.DateTimeField(null=True, auto_now=True)
-	COperator = models.CharField(max_length=40)
-	CItemCode = models.CharField(max_length=50)
-	CType = models.ForeignKey(CType, null=False)
-	CVender = models.ForeignKey(CVender, null=False)
-	CColor = models.ForeignKey(CColor, null=False)
-	CSize_S = models.IntegerField(null=True)
-	CSize_M = models.IntegerField(null=True)
-	CSize_L = models.IntegerField(null=True)
-	CSize_XL = models.IntegerField(null=True)
-	CSize_2XL = models.IntegerField(null=True)
-	CSize_3XL = models.IntegerField(null=True)
-	CSize_4XL = models.IntegerField(null=True)
-	CAmount = models.IntegerField(null=True)
-	
-class COutStockBill(models.Model):
-	COutStockBillId = models.AutoField(primary_key=True)
-	COutStockBillCode = models.CharField(max_length=40)
-	COutStockDate = models.DateTimeField(null=True, auto_now=True)
-	COperator = models.CharField(max_length=40)
-	CItemCode = models.CharField(max_length=50)
-	CType = models.ForeignKey(CType, null=False)
-	CVender = models.ForeignKey(CVender, null=False)
-	CColor = models.ForeignKey(CColor, null=False)
-	CSize_S = models.IntegerField(null=True)
-	CSize_M = models.IntegerField(null=True)
-	CSize_L = models.IntegerField(null=True)
-	CSize_XL = models.IntegerField(null=True)
-	CSize_2XL = models.IntegerField(null=True)
-	CSize_3XL = models.IntegerField(null=True)
-	CSize_4XL = models.IntegerField(null=True)
-	CAmount = models.IntegerField(null=True)
+class OutStockBill(models.Model):
+	OutStockBillId = models.AutoField(primary_key=True)
+	OutStockBillCode = models.CharField(max_length=40)
+	OutStockDate = models.DateTimeField(null=True, auto_now=True)
+	Operator = models.CharField(max_length=40)
+	ItemCode = models.CharField(max_length=50)
+	Type = models.ForeignKey(Type, null=False)
+	Vender = models.ForeignKey(Vender, null=False)
+	Color = models.ForeignKey(Color, null=False)
+	Size_S = models.IntegerField(null=True)
+	Size_M = models.IntegerField(null=True)
+	Size_L = models.IntegerField(null=True)
+	Size_XL = models.IntegerField(null=True)
+	Size_2XL = models.IntegerField(null=True)
+	Size_3XL = models.IntegerField(null=True)
+	Size_4XL = models.IntegerField(null=True)
+	Amount = models.IntegerField(null=True)
 	

@@ -6,17 +6,15 @@ from django.http import HttpResponse,HttpResponseRedirect
 
 #from django.db import models
 
-from models import Item,InStockBill,Inventory,CType,CVender,CColor,CInStockBill,CInventory,COutStockBill
+from models import Type,Vender,Color,InStockBill,Inventory,OutStockBill
 
-from forms import ItemForm,InStockBillForm,CTypeForm,CVenderForm,CColorForm,CInStockBillForm,ChangepwdForm,COutStockBillForm
+from forms import TypeForm,VenderForm,ColorForm,InStockBillForm,ChangepwdForm,OutStockBillForm
 
-from biz import InventoryBiz,InStockBillBiz,CInventoryBiz,CInStockBillBiz,COutStockBillBiz
+from biz import InventoryBiz,InStockBillBiz,OutStockBillBiz
 
 from django.db import transaction
 
-import datetime
-
-import time
+import datetime,time,sys 
 
 from django.shortcuts import render_to_response,render,get_object_or_404    
 from django.http import HttpResponse, HttpResponseRedirect    
@@ -32,10 +30,12 @@ from bootstrap_toolkit.widgets import BootstrapUneditableInput
 from django.contrib.auth.decorators import login_required  
   
 from .forms import LoginForm  
-
+sys.path.append("..")
+import db2xls
 
   
 def login(request):  
+    db2xls.db2xls()
     if request.method == 'GET':  
         form = LoginForm()  
         return render_to_response('login.html', RequestContext(request, {'form': form}))  
@@ -88,42 +88,216 @@ def index(request):
 
 	return render_to_response('index.html')
 	
-def AddItemForm(request):
+@login_required(login_url='/login/')  
+def addItem(request):
 
-	form = ItemForm({})
+	form1 = TypeForm({})
+	form2 = VenderForm({})
+	form3 = ColorForm({})
 
 	if request.method == 'POST':
 
-		form = ItemForm(request.POST)
+		form1 = TypeForm(request.POST)
+		form2 = VenderForm(request.POST)
+		form3 = ColorForm(request.POST)
+		success1 = ''
+		success2 = ''
+		success3 = ''
+		inventorys = None
+		
+		if form1.is_valid():
 
-		if form.is_valid():
+			cd = form1.cleaned_data
 
-			cd = form.cleaned_data
+			type = Type()
 
-			item = Item()
-
-			item.ItemCode = cd['ItemCode']
-
-			item.ItemName = cd['ItemName']
+			type.TypeName = cd['TypeName']
 			
-			item.Remark = cd['Remark'] 
+			inventorys = Type.objects.filter(TypeName__contains=type.TypeName)
+			
+			if (inventorys.count()==0):
+				type.save()
+				success1 = '类型添加成功'
+			else:
+				success1 = '类型已存在！无需再添加！'
+					
+			form1 = TypeForm()
+			form2 = VenderForm()
+			form3 = ColorForm()
 
-			item.save()
+			return render_to_response('itemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success1': success1},
 
-			return HttpResponseRedirect('/success/')
+			context_instance = RequestContext(request))
+			
+		if form2.is_valid():
 
-	else:
+			cd = form2.cleaned_data
 
-		form = ItemForm()
+			vender = Vender()
 
-	return render_to_response('ItemAdd.html', {'form': form},
+			vender.VenderName = cd['VenderName']
+
+			inventorys = Vender.objects.filter(VenderName__contains=vender.VenderName)
+			
+			if (inventorys.count()==0):
+				vender.save()
+				success2 = '厂家添加成功'
+			else:
+				success2 = '厂家已存在！无需再添加！'
+			
+			form1 = TypeForm()
+			form2 = VenderForm()
+			form3 = ColorForm()
+
+			return render_to_response('itemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success2': success2},
+
+			context_instance = RequestContext(request))
+		
+		if form3.is_valid():
+
+			cd = form3.cleaned_data
+
+			color = Color()
+
+			color.ColorName = cd['ColorName']
+
+			inventorys = Color.objects.filter(ColorName__contains=color.ColorName)
+			
+			if (inventorys.count()==0):
+				color.save()
+				success3 = '颜色添加成功'
+			else:
+				success3 = '颜色已存在！无需再添加！'
+			
+			form1 = TypeForm()
+			form2 = VenderForm()
+			form3 = ColorForm()
+			
+			return render_to_response('itemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success3': success3},
 
 			context_instance = RequestContext(request))
 
-@transaction.commit_on_success			
-def AddInStockBillForm(request):
+	else:
 
+		form1 = TypeForm()
+		form2 = VenderForm()
+		form3 = ColorForm()
+
+	return render_to_response('itemAdd.html', {'form1': form1,'form2': form2,'form3': form3},
+
+			context_instance = RequestContext(request))	
+	
+@login_required(login_url='/login/') 
+def deleteItem(request):
+
+	form1 = TypeForm({})
+	form2 = VenderForm({})
+	form3 = ColorForm({})
+
+	if request.method == 'POST':
+
+		form1 = TypeForm(request.POST)
+		form2 = VenderForm(request.POST)
+		form3 = ColorForm(request.POST)
+		success1 = ''
+		success2 = ''
+		success3 = ''
+		inventorys = None
+		
+		if form1.is_valid():
+
+			cd = form1.cleaned_data
+			
+			name = cd['TypeName']
+			
+			try:
+				type = Type.objects.get(TypeName = name)		
+				inventorys = Inventory.objects.filter(Type__TypeName__contains=name)
+				if (inventorys.count()==0):				
+					type.delete()
+					success1 = '类型删除成功'
+				else:
+					success1 = '库存中有该类型的数据，无法删除！'
+			except:
+				success1 = '类型不存在！无需再删除！'
+					
+			form1 = TypeForm()
+			form2 = VenderForm()
+			form3 = ColorForm()
+
+			return render_to_response('itemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success1': success1},
+
+			context_instance = RequestContext(request))
+			
+		if form2.is_valid():
+
+			cd = form2.cleaned_data
+
+			name = cd['VenderName']
+			
+			try:
+				vender = Vender.objects.get(VenderName = name)
+				inventorys = Inventory.objects.filter(Vender__VenderName__contains=name)
+				if (inventorys.count()==0):				
+					vender.delete()
+					success2 = '厂家删除成功'
+				else:
+					success2 = '库存中有该厂家的数据，无法删除！'
+			except:
+				success2 = '厂家不存在！无需再删除！'
+			
+			form1 = TypeForm()
+			form2 = VenderForm()
+			form3 = ColorForm()
+
+			return render_to_response('itemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success2': success2},
+
+			context_instance = RequestContext(request))
+		
+		if form3.is_valid():
+
+			cd = form3.cleaned_data
+
+			name = cd['ColorName']
+			
+			try:	
+				color = Color.objects.get(ColorName = name)
+				inventorys = Inventory.objects.filter(Color__ColorName__contains=name)
+				if (inventorys.count()==0):				
+					color.delete()
+					success3 = '颜色删除成功'
+				else:
+					success3 = '库存中有该颜色的数据，无法删除！'
+			except:
+				success3 = '颜色不存在！无需再删除！'
+			
+			form1 = TypeForm()
+			form2 = VenderForm()
+			form3 = ColorForm()
+			
+			return render_to_response('itemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success3': success3},
+
+			context_instance = RequestContext(request))
+
+	else:
+
+		form1 = TypeForm()
+		form2 = VenderForm()
+		form3 = ColorForm()
+
+	return render_to_response('itemDelete.html', {'form1': form1,'form2': form2,'form3': form3},
+
+			context_instance = RequestContext(request))	
+	
+@login_required(login_url='/login/') 
+@transaction.commit_on_success
+def	inBillBootstrap(request):
+	
 	form = InStockBillForm({})
+	
+	inStockBill = InStockBill()
+	
+	success = ''
 
 	if request.method == 'POST':
 
@@ -133,349 +307,51 @@ def AddInStockBillForm(request):
 
 			cd = form.cleaned_data
 
-			inStockBill = InStockBill()
-
 			inStockBill.InStockBillCode = cd['InStockBillCode']
-
-			inStockBill.InStockDate = cd['InStockDate']
-
-			inStockBill.Amount = cd['Amount']
 
 			inStockBill.Operator = cd['Operator']
 
-			inStockBill.Item = cd['Item']
+			inStockBill.ItemCode = cd['ItemCode']
 			
-			biz = InventoryBiz()
+			inStockBill.Type = cd['Type']
 			
-			biz.save(inStockBill)
+			inStockBill.Vender = cd['Vender']
+			
+			inStockBill.Color = cd['Color']
+			
+			inStockBill.Size_S = cd['Size_S']
+			
+			inStockBill.Size_M = cd['Size_M']
+			
+			inStockBill.Size_L = cd['Size_L']
+			
+			inStockBill.Size_XL = cd['Size_XL']
+			
+			inStockBill.Size_2XL = cd['Size_2XL']
+			
+			inStockBill.Size_3XL = cd['Size_3XL']
+			
+			inStockBill.Size_4XL = cd['Size_4XL']
 			
 			billbiz = InStockBillBiz()
 			
+			inStockBill.Amount = billbiz.getInStockBillAcount(inStockBill) 
+			
+			biz = InventoryBiz()
+			
+			biz.saveForIn(inStockBill)
+				
 			billbiz.save(inStockBill)
+				
+			return render_to_response('inStock.html', {'form': form,'success': success,'inStockBill':inStockBill},
 
-			#inStockBill.save()
-
-			return HttpResponseRedirect('/success/')
+			context_instance = RequestContext(request))
 
 	else:
 
 		form = InStockBillForm()
 
-	return render_to_response('InStockAddForm.html',{'form': form}
-
-		,context_instance = RequestContext(request))
-		
-def UpdatingInventoryIn(inStockBill,inventory):
-
-	if (inventory.InventoryId == None):
-	
-		inventory.Item = inStockBill.Item
-		
-		inventory.Amount = 0
-		
-	inventory.Amount = inventory.Amount + inStockBill.Amount
-	
-def getInventoryByItemName(request):
-    error = False
-    inventorysJson = '[]'
-    if 'q' in request.GET:
-        q = request.GET['q']
-        if not q:
-            error = True
-        elif len(q) > 20:
-            error = True        
-        else:
-            biz = InventoryBiz()
-            inventorys =biz.getInventoryByItemName(q)    
-            inventorysJson=u'[' 
-
-            for inventory in inventorys:
-                inventorysJson = inventorysJson + u'{"InventoryId":"' + str( inventory.InventoryId) + u'","ItemName":"' +  inventory.Item.ItemName + u'","Amount":"' + str( inventory.Amount) + u'"}'
-            inventorysJson = inventorysJson + u']'
-
-
-    return HttpResponse(inventorysJson)
-
-def	inventoryQueryBootstrap(request):
-	error=False
-	if 'q' in request.GET:
-		q = request.GET['q']
-		if len(q) > 20:
-			error = True        
-		else:
-			biz = InventoryBiz()
-			inventorys =biz.getInventoryByItemName(q)
-			return render_to_response('inventoryQueryBootstrap.html',
-										{'inventorys': inventorys, 'query': q, 'error': error})
-			#return render_to_response('inventoryQueryBootstrap.html')
-	return render_to_response('inventoryQueryBootstrap.html')
-
-@login_required(login_url='/login/')  
-def AddCItemForm(request):
-
-	form1 = CTypeForm({})
-	form2 = CVenderForm({})
-	form3 = CColorForm({})
-
-	if request.method == 'POST':
-
-		form1 = CTypeForm(request.POST)
-		form2 = CVenderForm(request.POST)
-		form3 = CColorForm(request.POST)
-		success1 = ''
-		success2 = ''
-		success3 = ''
-		inventorys = None
-		
-		if form1.is_valid():
-
-			cd = form1.cleaned_data
-
-			cType = CType()
-
-			cType.CTypeName = cd['CTypeName']
-			
-			inventorys = CType.objects.filter(CTypeName__contains=cType.CTypeName)
-			
-			if (inventorys.count()==0):
-				cType.save()
-				success1 = '类型添加成功'
-			else:
-				success1 = '类型已存在！无需再添加！'
-					
-			form1 = CTypeForm()
-			form2 = CVenderForm()
-			form3 = CColorForm()
-
-			return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success1': success1},
-
-			context_instance = RequestContext(request))
-			
-		if form2.is_valid():
-
-			cd = form2.cleaned_data
-
-			cVender = CVender()
-
-			cVender.CVenderName = cd['CVenderName']
-
-			inventorys = CVender.objects.filter(CVenderName__contains=cVender.CVenderName)
-			
-			if (inventorys.count()==0):
-				cVender.save()
-				success2 = '厂家添加成功'
-			else:
-				success2 = '厂家已存在！无需再添加！'
-			
-			form1 = CTypeForm()
-			form2 = CVenderForm()
-			form3 = CColorForm()
-
-			return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success2': success2},
-
-			context_instance = RequestContext(request))
-		
-		if form3.is_valid():
-
-			cd = form3.cleaned_data
-
-			cColor = CColor()
-
-			cColor.CColorName = cd['CColorName']
-
-			inventorys = CColor.objects.filter(CColorName__contains=cColor.CColorName)
-			
-			if (inventorys.count()==0):
-				cColor.save()
-				success3 = '颜色添加成功'
-			else:
-				success3 = '颜色已存在！无需再添加！'
-			
-			form1 = CTypeForm()
-			form2 = CVenderForm()
-			form3 = CColorForm()
-			
-			return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'form3': form3,'success3': success3},
-
-			context_instance = RequestContext(request))
-
-	else:
-
-		form1 = CTypeForm()
-		form2 = CVenderForm()
-		form3 = CColorForm()
-
-	return render_to_response('CItemAdd.html', {'form1': form1,'form2': form2,'form3': form3},
-
-			context_instance = RequestContext(request))
-
-@login_required(login_url='/login/') 
-def DeleteCItemForm(request):
-
-	form1 = CTypeForm({})
-	form2 = CVenderForm({})
-	form3 = CColorForm({})
-
-	if request.method == 'POST':
-
-		form1 = CTypeForm(request.POST)
-		form2 = CVenderForm(request.POST)
-		form3 = CColorForm(request.POST)
-		success1 = ''
-		success2 = ''
-		success3 = ''
-		inventorys = None
-		
-		if form1.is_valid():
-
-			cd = form1.cleaned_data
-			
-			name = cd['CTypeName']
-			
-			try:
-				cType = CType.objects.get(CTypeName = name)		
-				inventorys = CInventory.objects.filter(CType__CTypeName__contains=name)
-				if (inventorys.count()==0):				
-					cType.delete()
-					success1 = '类型删除成功'
-				else:
-					success1 = '库存中有该类型的数据，无法删除！'
-			except:
-				success1 = '类型不存在！无需再删除！'
-					
-			form1 = CTypeForm()
-			form2 = CVenderForm()
-			form3 = CColorForm()
-
-			return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success1': success1},
-
-			context_instance = RequestContext(request))
-			
-		if form2.is_valid():
-
-			cd = form2.cleaned_data
-
-			name = cd['CVenderName']
-			
-			try:
-				cVender = CVender.objects.get(CVenderName = name)
-				inventorys = CInventory.objects.filter(CVender__CVenderName__contains=name)
-				if (inventorys.count()==0):				
-					cVender.delete()
-					success2 = '厂家删除成功'
-				else:
-					success2 = '库存中有该厂家的数据，无法删除！'
-			except:
-				success2 = '厂家不存在！无需再删除！'
-			
-			form1 = CTypeForm()
-			form2 = CVenderForm()
-			form3 = CColorForm()
-
-			return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success2': success2},
-
-			context_instance = RequestContext(request))
-		
-		if form3.is_valid():
-
-			cd = form3.cleaned_data
-
-			name = cd['CColorName']
-			
-			try:	
-				cColor = CColor.objects.get(CColorName = name)
-				inventorys = CInventory.objects.filter(CColor__CColorName__contains=name)
-				if (inventorys.count()==0):				
-					cColor.delete()
-					success3 = '颜色删除成功'
-				else:
-					success3 = '库存中有该颜色的数据，无法删除！'
-			except:
-				success3 = '颜色不存在！无需再删除！'
-			
-			form1 = CTypeForm()
-			form2 = CVenderForm()
-			form3 = CColorForm()
-			
-			return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3,'success3': success3},
-
-			context_instance = RequestContext(request))
-
-	else:
-
-		form1 = CTypeForm()
-		form2 = CVenderForm()
-		form3 = CColorForm()
-
-	return render_to_response('CItemDelete.html', {'form1': form1,'form2': form2,'form3': form3},
-
-			context_instance = RequestContext(request))	
-	
-@login_required(login_url='/login/') 
-@transaction.commit_on_success
-def	inBillBootstrap(request):
-	
-	form = CInStockBillForm({})
-	
-	cinStockBill = CInStockBill()
-	
-	success = ''
-
-	if request.method == 'POST':
-
-		form = CInStockBillForm(request.POST)
-
-		if form.is_valid():
-
-			cd = form.cleaned_data
-
-			cinStockBill.CInStockBillCode = cd['CInStockBillCode']
-
-			cinStockBill.CInStockDate = cd['CInStockDate']
-
-			cinStockBill.COperator = cd['COperator']
-
-			cinStockBill.CItemCode = cd['CItemCode']
-			
-			cinStockBill.CType = cd['CType']
-			
-			cinStockBill.CVender = cd['CVender']
-			
-			cinStockBill.CColor = cd['CColor']
-			
-			cinStockBill.CSize_S = cd['CSize_S']
-			
-			cinStockBill.CSize_M = cd['CSize_M']
-			
-			cinStockBill.CSize_L = cd['CSize_L']
-			
-			cinStockBill.CSize_XL = cd['CSize_XL']
-			
-			cinStockBill.CSize_2XL = cd['CSize_2XL']
-			
-			cinStockBill.CSize_3XL = cd['CSize_3XL']
-			
-			cinStockBill.CSize_4XL = cd['CSize_4XL']
-			
-			billbiz = CInStockBillBiz()
-			
-			cinStockBill.CAmount = billbiz.getInStockBillAcount(cinStockBill) 
-			
-			biz = CInventoryBiz()
-			
-			biz.saveForIn(cinStockBill)
-				
-			billbiz.save(cinStockBill)
-				
-			return render_to_response('inStock.html', {'form': form,'success': success,'cinStockBill':cinStockBill},
-
-			context_instance = RequestContext(request))
-
-	else:
-
-		form = CInStockBillForm()
-
-	return render_to_response('inStock.html',{'form':form,'success': success,'cinStockBill':cinStockBill}
+	return render_to_response('inStock.html',{'form':form,'success': success,'inStockBill':inStockBill}
 
 		,context_instance = RequestContext(request))
 	
@@ -483,53 +359,51 @@ def	inBillBootstrap(request):
 @transaction.commit_on_success
 def	outBillBootstrap(request):
 	
-	form = COutStockBillForm({})
+	form = OutStockBillForm({})
 	
-	outStockBill = COutStockBill()
+	outStockBill = OutStockBill()
 	
 	success = ''
 
 	if request.method == 'POST':
 
-		form = COutStockBillForm(request.POST)
+		form = OutStockBillForm(request.POST)
 
 		if form.is_valid():
 
 			cd = form.cleaned_data
 
-			outStockBill.COutStockBillCode = cd['COutStockBillCode']
+			outStockBill.OutStockBillCode = cd['OutStockBillCode']
 
-			outStockBill.COutStockDate = cd['COutStockDate']
+			outStockBill.Operator = cd['Operator']
 
-			outStockBill.COperator = cd['COperator']
-
-			outStockBill.CItemCode = cd['CItemCode']
+			outStockBill.ItemCode = cd['ItemCode']
 			
-			outStockBill.CType = cd['CType']
+			outStockBill.Type = cd['Type']
 			
-			outStockBill.CVender = cd['CVender']
+			outStockBill.Vender = cd['Vender']
 			
-			outStockBill.CColor = cd['CColor']
+			outStockBill.Color = cd['Color']
 			
-			outStockBill.CSize_S = cd['CSize_S']
+			outStockBill.Size_S = cd['Size_S']
 			
-			outStockBill.CSize_M = cd['CSize_M']
+			outStockBill.Size_M = cd['Size_M']
 			
-			outStockBill.CSize_L = cd['CSize_L']
+			outStockBill.Size_L = cd['Size_L']
 			
-			outStockBill.CSize_XL = cd['CSize_XL']
+			outStockBill.Size_XL = cd['Size_XL']
 			
-			outStockBill.CSize_2XL = cd['CSize_2XL']
+			outStockBill.Size_2XL = cd['Size_2XL']
 			
-			outStockBill.CSize_3XL = cd['CSize_3XL']
+			outStockBill.Size_3XL = cd['Size_3XL']
 			
-			outStockBill.CSize_4XL = cd['CSize_4XL']
+			outStockBill.Size_4XL = cd['Size_4XL']
 			
-			billbiz = COutStockBillBiz()
+			billbiz = OutStockBillBiz()
 			
-			outStockBill.CAmount = billbiz.getInStockBillAcount(outStockBill) 
+			outStockBill.Amount = billbiz.getInStockBillAcount(outStockBill) 
 			
-			biz = CInventoryBiz()
+			biz = InventoryBiz()
 			
 			if biz.saveForOut(outStockBill):
 			
@@ -544,7 +418,7 @@ def	outBillBootstrap(request):
 
 	else:
 
-		form = COutStockBillForm()
+		form = OutStockBillForm()
 
 	return render_to_response('outStock.html',{'form':form,'success': success,'outStockBill':outStockBill}
 
@@ -559,34 +433,34 @@ def is_valid_date(str):
         return False
 
 @login_required(login_url='/login/') 	
-def	inventoryQueryBootstrap2(request):
+def	inventoryQueryBootstrap(request):
 	error=''
 	totalAmount = 0
-	if 'CItemCode_q' in request.GET:
-		cItemCode_q = request.GET['CItemCode_q']
-		if len(cItemCode_q) > 20:
+	if 'ItemCode_q' in request.GET:
+		itemCode_q = request.GET['ItemCode_q']
+		if len(itemCode_q) > 20:
 			error = '货号长度错误！（<20）'        
 		else:
-			biz = CInventoryBiz()
-			inventorys =biz.getInventoryByItemCode(cItemCode_q)
+			biz = InventoryBiz()
+			inventorys =biz.getInventoryByItemCode(itemCode_q)
 			for inventory in inventorys:
-				totalAmount += inventory.CAmount
-			return render_to_response('inventoryQueryBootstrap2.html',
-										{'inventorys': inventorys, 'query1': cItemCode_q, 'error': error, 'totalAmount':totalAmount})
-			#return render_to_response('inventoryQueryBootstrap.html')
-	if 'CVender_q' in request.GET:
-		cVender_q = request.GET['CVender_q']
-		if len(cVender_q) > 20:
+				totalAmount += inventory.Amount
+			return render_to_response('inventoryQueryBootstrap.html',
+										{'inventorys': inventorys, 'query1': itemCode_q, 'error': error, 'totalAmount':totalAmount})
+			
+	if 'Vender_q' in request.GET:
+		vender_q = request.GET['Vender_q']
+		if len(vender_q) > 20:
 			error = '厂家名称长度错误！（<20）'       
 		else: 
-			biz = CInventoryBiz()
-			inventorys =biz.getInventoryByCVenderName(cVender_q)
+			biz = InventoryBiz()
+			inventorys =biz.getInventoryByCVenderName(vender_q)
 			for inventory in inventorys:
-				totalAmount += inventory.CAmount
-			return render_to_response('inventoryQueryBootstrap2.html',
-										{'inventorys': inventorys, 'query2': cVender_q, 'error': error,'totalAmount':totalAmount})
+				totalAmount += inventory.Amount
+			return render_to_response('inventoryQueryBootstrap.html',
+										{'inventorys': inventorys, 'query2': vender_q, 'error': error,'totalAmount':totalAmount})
 	
-	return render_to_response('inventoryQueryBootstrap2.html',{'error': error})
+	return render_to_response('inventoryQueryBootstrap.html',{'error': error})
 
 @login_required(login_url='/login/') 
 def	inStockBillQueryBootstrap(request):
@@ -597,7 +471,7 @@ def	inStockBillQueryBootstrap(request):
 		if  not is_valid_date(time_q):
 			error = '时间格式错误！（如：2016-03-27）'         
 		else:
-			billbiz =  CInStockBillBiz()
+			billbiz =  InStockBillBiz()
 			inStockBills =billbiz.getInStockBillByTime(time_q)
 			for inStockBill in inStockBills:
 				totalAmount += inStockBill.CAmount
@@ -614,7 +488,7 @@ def	outStockBillQueryBootstrap(request):
 		if  not is_valid_date(time_q):
 			error = '时间格式错误！（如：2016-03-27）'         
 		else:
-			billbiz =  COutStockBillBiz()
+			billbiz =  OutStockBillBiz()
 			outStockBills =billbiz.getOutStockBillByTime(time_q)
 			for outStockBill in outStockBills:
 				totalAmount += outStockBill.CAmount

@@ -1,6 +1,6 @@
 ﻿from django import forms
 
-from models import Item,CColor,CVender,CType
+from models import Color,Vender,Type
 
 from django.contrib.auth.models import User  
 
@@ -72,37 +72,40 @@ class ChangepwdForm(forms.Form):
         else:  
             cleaned_data = super(ChangepwdForm, self).clean()  
         return cleaned_data 
+	
+class TypeForm(forms.Form):
 
-class ItemForm(forms.Form):
+	TypeName = forms.CharField(
+		
+		max_length = 12,
+		
+		label = u'类型:',
+		
+		error_messages={'required': u'必填项'},
+		)
+	
+class VenderForm(forms.Form):
 
-	ItemCode = forms.CharField(
+	VenderName = forms.CharField(
 		
-		max_length = 10,
+		max_length = 12,
 		
-		label = u'物料编码:',
+		label = u'厂家:',
+		
+		error_messages={'required': u'必填项'},
+		)	
+	
+class ColorForm(forms.Form):
+
+	ColorName = forms.CharField(
+		
+		max_length = 12,
+		
+		label = u'颜色:',
 		
 		error_messages={'required': u'必填项'},
 		)
 
-	ItemName = forms.CharField(
-		
-		label = u'物料名称:',
-		
-		error_messages={'required': u'必填项'},
-		
-		)
-
-	#Remark = forms.CharField(required=False)
-	Remark = forms.CharField(
-		
-		widget = forms.Textarea,
-		
-		required = False,
-		
-		label = u'备注:',
-		
-		)
-		
 class InStockBillForm(forms.Form):
 
 	InStockBillCode = forms.CharField(
@@ -120,94 +123,8 @@ class InStockBillForm(forms.Form):
 		
 		error_messages={'required': u'必填项'},
 		)
-
-	InStockDate = forms.DateTimeField(
-		
-		label = u'入库日期:',
-		
-		error_messages={'required': u'必填项'},
-		)
-
-	Amount = forms.IntegerField(
-		
-		label = u'入库数量:',
-		
-		error_messages={'required': u'必填项'},
-		)
-
-	Item = forms.ModelChoiceField(
-		
-		label = u'物料:',
 	
-		queryset = Item.objects.all(),
-		
-		error_messages={'required': u'必填项'},
-
-		)
-	
-
-	
-class CTypeForm(forms.Form):
-
-	CTypeName = forms.CharField(
-		
-		max_length = 12,
-		
-		label = u'类型:',
-		
-		error_messages={'required': u'必填项'},
-		)
-	
-class CVenderForm(forms.Form):
-
-	CVenderName = forms.CharField(
-		
-		max_length = 12,
-		
-		label = u'厂家:',
-		
-		error_messages={'required': u'必填项'},
-		)	
-	
-class CColorForm(forms.Form):
-
-	CColorName = forms.CharField(
-		
-		max_length = 12,
-		
-		label = u'颜色:',
-		
-		error_messages={'required': u'必填项'},
-		)
-
-class CInStockBillForm(forms.Form):
-
-	CInStockBillCode = forms.CharField(
-		
-		max_length = 12,
-		
-		label = u'入库单编码:',
-		
-		error_messages={'required': u'必填项'},
-		)
-
-	COperator = forms.CharField(
-		
-		label = u'操作员:',
-		
-		error_messages={'required': u'必填项'},
-		)
-
-	CInStockDate = forms.DateTimeField(
-		
-		label = u'入库日期:',
-		
-		required = False,
-		
-		#error_messages={'required': u'必填项'},
-		)
-	
-	CItemCode = forms.CharField(
+	ItemCode = forms.CharField(
 		
 		max_length = 10,
 		
@@ -216,96 +133,91 @@ class CInStockBillForm(forms.Form):
 		error_messages={'required': u'必填项'},
 		)
 	
-	CType = forms.ModelChoiceField(
+	Type = forms.ModelChoiceField(
 		
 		label = u'类型:',
 		
-		queryset = CType.objects.all(),
+		queryset = Type.objects.all(),
 		
 		error_messages={'required': u'必填项'},
 		
 		)
 
-	CVender = forms.ModelChoiceField(
+	Vender = forms.ModelChoiceField(
 		
 		label = u'厂家:',
 		
-		queryset = CVender.objects.all(),
+		queryset = Vender.objects.all(),
 		
 		error_messages={'required': u'必填项'},
 		
 		)
 
 	#Remark = forms.CharField(required=False)
-	CColor = forms.ModelChoiceField(
+	Color = forms.ModelChoiceField(
 		
 		label = u'颜色:',
 		
-		queryset = CColor.objects.all(),
+		queryset = Color.objects.all(),
 		
 		error_messages={'required': u'必填项'},
 		
 		)
 
-	CSize_S = forms.IntegerField(
+	Size_S = forms.IntegerField(
 		
 		label = u'S:',
 		
 		required = False,
 		)
 	
-	CSize_M = forms.IntegerField(
+	Size_M = forms.IntegerField(
 		
 		label = u'M:',
 		
 		required = False,
 		)
 	
-	CSize_L = forms.IntegerField(
+	Size_L = forms.IntegerField(
 		
 		label = u'L:',
 		
 		required = False,
 		)
 	
-	CSize_XL = forms.IntegerField(
+	Size_XL = forms.IntegerField(
 		
 		label = u'XL:',
 		
 		required = False,
 		)
 	
-	CSize_2XL = forms.IntegerField(
+	Size_2XL = forms.IntegerField(
 		
 		label = u'2XL:',
 		
 		required = False,
 		)
 	
-	CSize_3XL = forms.IntegerField(
+	Size_3XL = forms.IntegerField(
 		
 		label = u'3XL:',
 		
 		required = False,
 		)
 	
-	CSize_4XL = forms.IntegerField(
+	Size_4XL = forms.IntegerField(
 		
 		label = u'4XL:',
 		
 		required = False,
 		)
 	
-	CAmount = forms.IntegerField(
-		
-		label = u'总计:',
-		
-		required = False,
-		)
 	
-class COutStockBillForm(forms.Form):
+	
+class OutStockBillForm(forms.Form):
 
-	COutStockBillCode = forms.CharField(
+	OutStockBillCode = forms.CharField(
 		
 		max_length = 12,
 		
@@ -314,23 +226,14 @@ class COutStockBillForm(forms.Form):
 		error_messages={'required': u'必填项'},
 		)
 
-	COperator = forms.CharField(
+	Operator = forms.CharField(
 		
 		label = u'操作员:',
 		
 		error_messages={'required': u'必填项'},
 		)
-
-	COutStockDate = forms.DateTimeField(
-		
-		label = u'出库日期:',
-		
-		required = False,
-		
-		#error_messages={'required': u'必填项'},
-		)
 	
-	CItemCode = forms.CharField(
+	ItemCode = forms.CharField(
 		
 		max_length = 10,
 		
@@ -339,89 +242,84 @@ class COutStockBillForm(forms.Form):
 		error_messages={'required': u'必填项'},
 		)
 	
-	CType = forms.ModelChoiceField(
+	Type = forms.ModelChoiceField(
 		
 		label = u'类型:',
 		
-		queryset = CType.objects.all(),
+		queryset = Type.objects.all(),
 		
 		error_messages={'required': u'必填项'},
 		
 		)
 
-	CVender = forms.ModelChoiceField(
+	Vender = forms.ModelChoiceField(
 		
 		label = u'厂家:',
 		
-		queryset = CVender.objects.all(),
+		queryset = Vender.objects.all(),
 		
 		error_messages={'required': u'必填项'},
 		
 		)
 
 	#Remark = forms.CharField(required=False)
-	CColor = forms.ModelChoiceField(
+	Color = forms.ModelChoiceField(
 		
 		label = u'颜色:',
 		
-		queryset = CColor.objects.all(),
+		queryset = Color.objects.all(),
 		
 		error_messages={'required': u'必填项'},
 		
 		)
 
-	CSize_S = forms.IntegerField(
+	Size_S = forms.IntegerField(
 		
 		label = u'S:',
 		
 		required = False,
 		)
 	
-	CSize_M = forms.IntegerField(
+	Size_M = forms.IntegerField(
 		
 		label = u'M:',
 		
 		required = False,
 		)
 	
-	CSize_L = forms.IntegerField(
+	Size_L = forms.IntegerField(
 		
 		label = u'L:',
 		
 		required = False,
 		)
 	
-	CSize_XL = forms.IntegerField(
+	Size_XL = forms.IntegerField(
 		
 		label = u'XL:',
 		
 		required = False,
 		)
 	
-	CSize_2XL = forms.IntegerField(
+	Size_2XL = forms.IntegerField(
 		
 		label = u'2XL:',
 		
 		required = False,
 		)
 	
-	CSize_3XL = forms.IntegerField(
+	Size_3XL = forms.IntegerField(
 		
 		label = u'3XL:',
 		
 		required = False,
 		)
 	
-	CSize_4XL = forms.IntegerField(
+	Size_4XL = forms.IntegerField(
 		
 		label = u'4XL:',
 		
 		required = False,
 		)
 	
-	CAmount = forms.IntegerField(
-		
-		label = u'总计:',
-		
-		required = False,
-		)
+	

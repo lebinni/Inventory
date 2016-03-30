@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8">
@@ -28,10 +28,18 @@
        
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="../">首页</a></li>
+            <li class="active"><a href="/index/">首页</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right hidden-sm">
+			<li>
+			<a class="no-underline text-sans-serif" href="/logout/"><strong>退出</strong>
+			</a></li></ul>
+			
+			<ul class="nav navbar-nav navbar-right hidden-sm">
             <li><a href="#about">关于</a></li>            
+          </ul>
+          <ul class="nav navbar-nav navbar-right hidden-sm">
+            <li><a>欢迎 admin 用户使用本系统</a></li>            
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -46,23 +54,44 @@
    <form class="form-inline" role="form" action="/inventoryQueryBootstrap/" method="get">
     <div class="form-group">
 		
-        <label for="name"><h4>物料名称:</h4></label>
-        <input type="text" class="form-control" id="ItemName" placeholder="请输入物料名称" name="q" value={{query}}>
+        <label for="name"><h4>货号:</h4></label>
+        <input type="text" class="form-control" id="ItemCode" placeholder="请输入货号" name="ItemCode_q" value={{query1}}>
         <button id="search"  type="submit" class="btn btn-default">查询</button>
 		
-   </div>    
+   </div> 
     </form>
+    <form class="form-inline" role="form" action="/inventoryQueryBootstrap/" method="get">
+    <div class="form-group">
+		
+        <label for="name"><h4>厂家:</h4></label>
+        <input type="text" class="form-control" id="Vender" placeholder="请输入厂家" name="Vender_q" value={{query2}}>
+        <button id="search"  type="submit" class="btn btn-default">查询</button>
+		
+   </div>   
+    </form>
+    
+     <br><label for="name" ><h4><p style="color: red;">{{error}}</p></h4></label></br>
+     <label for="name" ><h4><p style="color: red;">查询结果共计:{{totalAmount}}(件)</p></h4></label>
 	</center>
-
+	
 	 <div class="row">
 			<div class="col-md-18">
 			  <table class="table" id="inventorysTable" data-cache="false">
 				<thead>
 				  <tr>
 					<th>#</th>
-					<th>InventoryId</th>
-					<th>ItemName</th>
-					<th>Amount</th>
+					<th>货号</th>
+					<th>类型</th>
+					<th>厂家</th>
+					<th>颜色</th>
+					<th>  S</th>
+					<th>  M</th>
+					<th>  L</th>
+					<th> XL</th>
+					<th>2XL</th>
+					<th>3XL</th>
+					<th>4XL</th>
+					<th>总计</th>
 				  </tr>
 				</thead>
 				<tbody>
@@ -70,8 +99,17 @@
 					{% for inventory in inventorys %}
                     <tr>
 					<th></th>
-                    <td >{{inventory.InventoryId}}</td>
-                    <td >{{inventory.Item.ItemName}}</td>
+                    <td >{{inventory.ItemCode}}</td>
+                    <td >{{inventory.Type}}</td>
+                    <td >{{inventory.Vender}}</td>
+                    <td >{{inventory.Color}}</td>
+                    <td >{{inventory.Size_S}}</td>
+                    <td >{{inventory.Size_M}}</td>
+                    <td >{{inventory.Size_L}}</td>
+                    <td >{{inventory.Size_XL}}</td>
+                    <td >{{inventory.Size_2XL}}</td>
+                    <td >{{inventory.Size_3XL}}</td>
+                    <td >{{inventory.Size_4XL}}</td>
                     <td >{{inventory.Amount}}</td>
                     </tr>
 					{% endfor %}
@@ -82,6 +120,7 @@
 			  </table>
 			</div>
 	 </div>
+	
  </div>
   </body>
 </html>

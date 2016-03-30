@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>参数删除</title>
+    <title>参数添加</title>
 
     <!-- Bootstrap -->
     <!-- 新 Bootstrap 核心 CSS 文件 -->
@@ -47,135 +47,95 @@
 	
    <div class="container theme-showcase" role="main">
     <div class="jumbotron">
-        <h1>参数删除</h1>
+        <h1>参数添加</h1>
         <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>
       </div>
     
 
-<style type="text/css">
-
-ul.errorlist {
-
-	margin: 0;
-
-	padding: 0;
-
-}
-
-.errorlist li {
-
-	background-color: red;
-
-	color: white;
-
-	display: block;
-
-	font-size: 10px;
-
-	margin: 0px 0px 3px ;
-
-	padding: 4px 5px;
-
-}
-
-</style>
-
-
-<form class="form-inline" action="/DeleteCItem/" method="post">
-<div class="projects-header page-header">
-	<h3>
-	<span class="label label-primary">服装类型删除:</span>
-	</h3>
-	</div>
-	<center>
-	{% if form1.errors %}
-
-	<p style="color: red;">
-
-	Please correct the error{{ form1.errors|pluralize }} below.
-
-	</p>
- 
-
-{% endif %}
-{% csrf_token %}
-
-<table>
-
-{{ form1.as_table }}
-
-</table>
-
-<button id="submit"  type="submit" class="btn btn-default">删除</button>
-<p style="color: red;">
-{{success1}}
-</p>
-</center>
-<div class="projects-header page-header">
-	<h3>
-	<span class="label label-primary">服装厂家删除:</span>
-	</h3>
-	</div>
-	<center>
-	{% if form2.errors %}
-
-	<p style="color: red;">
-
-	Please correct the error{{ form2.errors|pluralize }} below2.
-
-	</p>
-  
-
-
-
-{% endif %}
-
-<table>
-
-{{ form2.as_table }}
-
-</table>
-
-<button id="submit"  type="submit" class="btn btn-default">删除</button>
-
-<p style="color: red;">
-{{success2}}
-</p>
-</center>
-<div class="projects-header page-header">
-<h3>
-	<span class="label label-primary">服装颜色删除:</span>
-	</h3>
-	</div>
-	<center>
-	{% if form3.errors %}
-
-	<p style="color: red;">
-
-	Please correct the error{{ form3.errors|pluralize }} below3.
-
-	</p>
-  
-
-
-
-{% endif %}
-
-<table>
-
-{{ form3.as_table }}
-
-</table>
-
-<button id="submit"  type="submit" class="btn btn-default">删除</button>
-
-<p style="color: red;">
-{{success3}}
-</p>
-
-</form>
-
+	<style type="text/css">
 	
- </center>
+		ul.errorlist {
+		
+			margin: 0;
+		
+			padding: 0;
+		
+		}
+	
+		.errorlist li {
+		
+			background-color: red;
+		
+			color: white;
+		
+			display: block;
+		
+			font-size: 10px;
+		
+			margin: 0px 0px 3px ;
+		
+			padding: 4px 5px;
+		
+		}
+	
+	</style>
+
+
+	<form class="form-inline" action="" method="post">
+		<div class="projects-header page-header">
+			<h3>
+			<span class="label label-primary">服装类型添加:</span>
+			</h3>
+			</div>
+		<center>
+			{% if form1.errors %}	
+			<p style="color: red;">Please correct the error{{ form1.errors|pluralize }} below.</p>
+			{% endif %}
+			{% csrf_token %}
+		<table>
+			{{ form1.as_table }}
+			</table>	
+		<button id="submit"  type="submit" class="btn btn-default">添加</button>
+			<p style="color: red;">
+				{{success1}}
+			</p>
+			</center>
+		<div class="projects-header page-header">
+			<h3>
+			<span class="label label-primary">服装厂家添加:</span>
+			</h3>
+			</div>
+		<center>
+			{% if form2.errors %}
+			<p style="color: red;">Please correct the error{{ form2.errors|pluralize }} below2.</p>
+			{% endif %}
+	
+		<table>
+			{{ form2.as_table }}
+			</table>
+	
+		<button id="submit"  type="submit" class="btn btn-default">添加</button>
+		<p style="color: red;">{{success2}}</p>
+			</center>
+		<div class="projects-header page-header">
+			<h3>
+			<span class="label label-primary">服装颜色添加:</span>
+			</h3>
+			</div>
+		<center>
+			{% if form3.errors %}
+			<p style="color: red;">Please correct the error{{ form3.errors|pluralize }} below3.</p>
+			{% endif %}
+		<table>
+			{{ form3.as_table }}
+			</table>
+	
+		<button id="submit"  type="submit" class="btn btn-default">添加</button>
+	
+		<p style="color: red;">
+			{{success3}}
+			</p>
+			</center>
+		</form>		
   </body>
 </html>

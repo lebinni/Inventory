@@ -23,6 +23,8 @@ urlpatterns = patterns('',
 	
 	# url(r'^admin/', include(admin.site.urls)),
     
+    url(r'^about/$',  views.about),
+    
     url(r'^index/$',  views.index),
     
     url(r'^login/$',  views.login), 

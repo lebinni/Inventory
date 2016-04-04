@@ -82,6 +82,11 @@ def changepwd(request):
 def success(request):
 
 	return HttpResponse('success')
+    
+@login_required(login_url='/login/')    
+def about(request):
+
+    return render_to_response('about.html')
 
 @login_required(login_url='/login/')	
 def index(request):

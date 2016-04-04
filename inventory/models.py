@@ -42,6 +42,7 @@ class Inventory (models.Model):
 	Size_2XL = models.IntegerField(null=True)
 	Size_3XL = models.IntegerField(null=True)
 	Size_4XL = models.IntegerField(null=True)
+	Size_5XL = models.IntegerField(null=True)
 	Amount = models.IntegerField(null=True)
 	
 	class Meta:
@@ -63,6 +64,7 @@ class InStockBill(models.Model):
 	Size_2XL = models.IntegerField(null=True)
 	Size_3XL = models.IntegerField(null=True)
 	Size_4XL = models.IntegerField(null=True)
+	Size_5XL = models.IntegerField(null=True)
 	Amount = models.IntegerField(null=True)
 	
 class OutStockBill(models.Model):
@@ -81,5 +83,6 @@ class OutStockBill(models.Model):
 	Size_2XL = models.IntegerField(null=True)
 	Size_3XL = models.IntegerField(null=True)
 	Size_4XL = models.IntegerField(null=True)
+	Size_5XL = models.IntegerField(null=True)
 	Amount = models.IntegerField(null=True)
 	

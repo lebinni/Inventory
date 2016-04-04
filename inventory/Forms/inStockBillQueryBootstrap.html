@@ -85,6 +85,7 @@
 					<th>2XL</th>
 					<th>3XL</th>
 					<th>4XL</th>
+					<th>5XL</th>
 					<th>总计</th>
 				  </tr>
 				</thead>
@@ -93,21 +94,22 @@
 					{% for inStockBill in inStockBills %}
                     <tr>
 					<th></th>
-					<td >{{inStockBill.CInStockBillCode}}</td>
-					<td >{{inStockBill.CInStockDate}}</td>
-					<td >{{inStockBill.COperator}}</td>
-                    <td >{{inStockBill.CItemCode}}</td>
-                    <td >{{inStockBill.CType}}</td>
-                    <td >{{inStockBill.CVender}}</td>
-                    <td >{{inStockBill.CColor}}</td>
-                    <td >{{inStockBill.CSize_S}}</td>
-                    <td >{{inStockBill.CSize_M}}</td>
-                    <td >{{inStockBill.CSize_L}}</td>
-                    <td >{{inStockBill.CSize_XL}}</td>
-                    <td >{{inStockBill.CSize_2XL}}</td>
-                    <td >{{inStockBill.CSize_3XL}}</td>
-                    <td >{{inStockBill.CSize_4XL}}</td>
-                    <td >{{inStockBill.CAmount}}</td>
+					<td >{{inStockBill.InStockBillCode}}</td>
+					<td >{{inStockBill.InStockDate}}</td>
+					<td >{{inStockBill.Operator}}</td>
+                    <td >{{inStockBill.ItemCode}}</td>
+                    <td >{{inStockBill.Type}}</td>
+                    <td >{{inStockBill.Vender}}</td>
+                    <td >{{inStockBill.Color}}</td>
+                    <td >{{inStockBill.Size_S}}</td>
+                    <td >{{inStockBill.Size_M}}</td>
+                    <td >{{inStockBill.Size_L}}</td>
+                    <td >{{inStockBill.Size_XL}}</td>
+                    <td >{{inStockBill.Size_2XL}}</td>
+                    <td >{{inStockBill.Size_3XL}}</td>
+                    <td >{{inStockBill.Size_4XL}}</td>
+                    <td >{{inStockBill.Size_5XL}}</td>
+                    <td >{{inStockBill.Amount}}</td>
                     </tr>
 					{% endfor %}
 				{% else %}

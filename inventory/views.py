@@ -332,6 +332,8 @@ def	inBillBootstrap(request):
 			inStockBill.Size_3XL = cd['Size_3XL']
 			
 			inStockBill.Size_4XL = cd['Size_4XL']
+            
+			inStockBill.Size_5XL = cd['Size_5XL']
 			
 			billbiz = InStockBillBiz()
 			
@@ -398,6 +400,8 @@ def	outBillBootstrap(request):
 			outStockBill.Size_3XL = cd['Size_3XL']
 			
 			outStockBill.Size_4XL = cd['Size_4XL']
+            
+			outStockBill.Size_5XL = cd['Size_5XL']
 			
 			billbiz = OutStockBillBiz()
 			
@@ -474,7 +478,7 @@ def	inStockBillQueryBootstrap(request):
 			billbiz =  InStockBillBiz()
 			inStockBills =billbiz.getInStockBillByTime(time_q)
 			for inStockBill in inStockBills:
-				totalAmount += inStockBill.CAmount
+				totalAmount += inStockBill.Amount
 			return render_to_response('inStockBillQueryBootstrap.html',
 										{'inStockBills': inStockBills, 'query3': time_q, 'error': error,'totalAmount':totalAmount})
 	return render_to_response('inStockBillQueryBootstrap.html',{'error': error})
@@ -491,9 +495,9 @@ def	outStockBillQueryBootstrap(request):
 			billbiz =  OutStockBillBiz()
 			outStockBills =billbiz.getOutStockBillByTime(time_q)
 			for outStockBill in outStockBills:
-				totalAmount += outStockBill.CAmount
+				totalAmount += outStockBill.Amount
 			return render_to_response('outStockBillQueryBootstrap.html',
-										{'stockBills': outStockBills, 'query3': time_q, 'error': error,'totalAmount':totalAmount})
+										{'outStockBills': outStockBills, 'query3': time_q, 'error': error,'totalAmount':totalAmount})
 	return render_to_response('outStockBillQueryBootstrap.html',{'error': error})
 
 @login_required(login_url='/login/') 

@@ -212,6 +212,17 @@ class InStockBillForm(forms.Form):
 		
 		required = False,
 		)
+
+	Size_5XL = forms.IntegerField(
+		
+		label = u'5XL:',
+		
+		required = False,
+		)
+
+    
+    
+    
 	
 	
 	
@@ -321,5 +332,13 @@ class OutStockBillForm(forms.Form):
 		
 		required = False,
 		)
+
+	Size_5XL = forms.IntegerField(
+		
+		label = u'5XL:',
+		
+		required = False,
+		)
+    
 	
 	

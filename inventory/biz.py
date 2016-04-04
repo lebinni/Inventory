@@ -62,6 +62,7 @@ class InventoryBiz(object):
 			inventory.Size_2XL = 0
 			inventory.Size_3XL = 0
 			inventory.Size_4XL = 0
+			inventory.Size_5XL = 0
 			inventory.Amount = 0
 		if (inStockBill.Size_S == None):
 			inStockBill.Size_S = 0
@@ -77,6 +78,8 @@ class InventoryBiz(object):
 			inStockBill.Size_3XL = 0
 		if (inStockBill.Size_4XL == None):
 			inStockBill.Size_4XL = 0
+		if (inStockBill.Size_5XL == None):
+			inStockBill.Size_5XL = 0
 		if (inStockBill.Amount == None):
 			inStockBill.Amount = 0
 		inventory.Size_S = inventory.Size_S + inStockBill.Size_S
@@ -86,6 +89,7 @@ class InventoryBiz(object):
 		inventory.Size_2XL = inventory.Size_2XL + inStockBill.Size_2XL
 		inventory.Size_3XL = inventory.Size_3XL + inStockBill.Size_3XL
 		inventory.Size_4XL = inventory.Size_4XL + inStockBill.Size_4XL
+		inventory.Size_5XL = inventory.Size_5XL + inStockBill.Size_5XL
 		inventory.Amount = inventory.Amount + inStockBill.Amount
 		
 	def updatingInventoryOut(self,outStockBill,inventory):
@@ -101,6 +105,7 @@ class InventoryBiz(object):
 			inventory.Size_2XL = 0
 			inventory.Size_3XL = 0
 			inventory.Size_4XL = 0
+			inventory.Size_5XL = 0
 			inventory.Amount = 0
 		if (outStockBill.Size_S == None):
 			outStockBill.Size_S = 0
@@ -116,6 +121,8 @@ class InventoryBiz(object):
 			outStockBill.Size_3XL = 0
 		if (outStockBill.Size_4XL == None):
 			outStockBill.Size_4XL = 0
+		if (outStockBill.Size_5XL == None):
+			outStockBill.Size_5XL = 0
 		if (outStockBill.Amount == None):
 			outStockBill.Amount = 0
 		if (inventory.Size_S >= outStockBill.Size_S):
@@ -152,6 +159,12 @@ class InventoryBiz(object):
 			inventory.Size_4XL = inventory.Size_4XL - outStockBill.Size_4XL
 		else:
 			return False
+		
+		if (inventory.Size_5XL >= outStockBill.Size_5XL):
+			inventory.Size_5XL = inventory.Size_5XL - outStockBill.Size_5XL
+		else:
+			return False
+		
 		if (inventory.Amount >= outStockBill.Amount):
 			inventory.Amount = inventory.Amount - outStockBill.Amount
 		else:
@@ -202,8 +215,10 @@ class InStockBillBiz(object):
 			inStockBill.Size_3XL = 0
 		if (inStockBill.Size_4XL == None):
 			inStockBill.Size_4XL = 0
-			
-		totalAmount =  inStockBill.Size_S + inStockBill.Size_M + inStockBill.Size_L + inStockBill.Size_XL + inStockBill.Size_2XL + inStockBill.Size_3XL + inStockBill.Size_4XL
+		if (inStockBill.Size_5XL == None):
+			inStockBill.Size_5XL = 0
+				
+		totalAmount =  inStockBill.Size_S + inStockBill.Size_M + inStockBill.Size_L + inStockBill.Size_XL + inStockBill.Size_2XL + inStockBill.Size_3XL + inStockBill.Size_4XL + inStockBill.Size_5XL
 		
 		return totalAmount
 
@@ -250,7 +265,9 @@ class OutStockBillBiz(object):
 			outStockBill.Size_3XL = 0
 		if (outStockBill.Size_4XL == None):
 			outStockBill.Size_4XL = 0
+		if (outStockBill.Size_5XL == None):
+			outStockBill.Size_5XL = 0
 			
-		totalAmount =  outStockBill.Size_S + outStockBill.Size_M + outStockBill.Size_L + outStockBill.Size_XL + outStockBill.Size_2XL + outStockBill.Size_3XL + outStockBill.Size_4XL
+		totalAmount =  outStockBill.Size_S + outStockBill.Size_M + outStockBill.Size_L + outStockBill.Size_XL + outStockBill.Size_2XL + outStockBill.Size_3XL + outStockBill.Size_4XL + outStockBill.Size_5XL
 		
 		return totalAmount

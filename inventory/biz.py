@@ -94,10 +94,10 @@ class InventoryBiz(object):
 		
 	def updatingInventoryOut(self,outStockBill,inventory):
 		if (inventory.InventoryId == None):
-			inventory.Type = outStockBill.CType
-			inventory.Vender = outStockBill.CVender
-			inventory.Color = outStockBill.CColor
-			inventory.ItemCode = outStockBill.CItemCode
+			inventory.Type = outStockBill.Type
+			inventory.Vender = outStockBill.Vender
+			inventory.Color = outStockBill.Color
+			inventory.ItemCode = outStockBill.ItemCode
 			inventory.Size_S = 0
 			inventory.Size_M = 0
 			inventory.Size_L = 0

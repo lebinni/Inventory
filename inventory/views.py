@@ -349,6 +349,8 @@ def	inBillBootstrap(request):
 			biz.saveForIn(inStockBill)
 				
 			billbiz.save(inStockBill)
+            
+			success = '入库单添加成功'
 				
 			return render_to_response('inStock.html', {'form': form,'success': success,'inStockBill':inStockBill},
 
@@ -445,6 +447,7 @@ def is_valid_date(str):
 def	inventoryQueryBootstrap(request):
 	error=''
 	totalAmount = 0
+	showContext = ''
 	if 'ItemCode_q' in request.GET:
 		itemCode_q = request.GET['ItemCode_q']
 		if len(itemCode_q) > 20:
@@ -454,8 +457,9 @@ def	inventoryQueryBootstrap(request):
 			inventorys =biz.getInventoryByItemCode(itemCode_q)
 			for inventory in inventorys:
 				totalAmount += inventory.Amount
+			showContext = '查询结果共计 %d 件' %totalAmount
 			return render_to_response('inventoryQueryBootstrap.html',
-										{'inventorys': inventorys, 'query1': itemCode_q, 'error': error, 'totalAmount':totalAmount})
+										{'inventorys': inventorys, 'query1': itemCode_q, 'error': error, 'showContext':showContext})
 			
 	if 'Vender_q' in request.GET:
 		vender_q = request.GET['Vender_q']
@@ -466,10 +470,44 @@ def	inventoryQueryBootstrap(request):
 			inventorys =biz.getInventoryByCVenderName(vender_q)
 			for inventory in inventorys:
 				totalAmount += inventory.Amount
+			showContext = '查询结果共计 %d 件' %totalAmount
 			return render_to_response('inventoryQueryBootstrap.html',
-										{'inventorys': inventorys, 'query2': vender_q, 'error': error,'totalAmount':totalAmount})
+										{'inventorys': inventorys, 'query2': vender_q, 'error': error,'showContext':showContext})
 	
-	return render_to_response('inventoryQueryBootstrap.html',{'error': error})
+	if request.method == "GET":
+		if request.GET.has_key('find0Amount0'): 
+			biz = InventoryBiz()
+			inventorys =biz.find0Inventory()
+			totalAmount =inventorys.count()
+			showContext = '查询结果共计 %d 条' %totalAmount
+			return render_to_response('inventoryQueryBootstrap.html',{'inventorys': inventorys, 'error': error,'showContext':showContext})
+		elif request.GET.has_key('find0Amount1'): 
+			biz = InventoryBiz()
+			inventorys = biz.find0InventoryForItemCode()
+			totalAmount =inventorys.count()
+			showContext = '查询结果共计 %d 条' %totalAmount
+			return render_to_response('inventoryQueryBootstrap.html',{'inventorys': inventorys, 'error': error,'showContext':showContext})
+		elif request.GET.has_key('delete0Amount0'): 
+			biz = InventoryBiz()
+			inventorys =biz.find0Inventory()
+			totalAmount =inventorys.count()
+			if inventorys.count()>0:
+				for inv in inventorys:
+					inv.delete()
+			showContext = '删除记录共计 %d 条' %totalAmount
+			return render_to_response('inventoryQueryBootstrap.html',{'inventorys': inventorys, 'error': error,'showContext':showContext})	
+		elif request.GET.has_key('delete0Amount1'): 
+			biz = InventoryBiz()
+			inventorys = biz.find0InventoryForItemCode()
+			totalAmount =inventorys.count()
+			if inventorys.count()>0:
+				for inv in inventorys:
+					inv.delete()
+			showContext = '删除记录共计 %d 条' %totalAmount
+			return render_to_response('inventoryQueryBootstrap.html',{'inventorys': inventorys, 'error': error,'showContext':showContext})
+		
+                		
+	return render_to_response('inventoryQueryBootstrap.html',{'error': error,'showContext':showContext})
 
 @login_required(login_url='/login/') 
 def	inStockBillQueryBootstrap(request):
@@ -507,6 +545,5 @@ def	outStockBillQueryBootstrap(request):
 
 @login_required(login_url='/login/') 
 def statisticalAnalysis(request):
-
 	
 	return render_to_response('statisticalAnalysis.html')

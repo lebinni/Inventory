@@ -70,8 +70,24 @@
    </div>   
     </form>
     
+     <form class="form-inline" role="form" action="/inventoryQueryBootstrap/" method="get">	
+     <div class="form-group">
+        <p></p> 
+        <button type="submit"  name="find0Amount0" class="btn btn-default">查询库存为0的商品</button>
+       
+        <button type="submit"  name="delete0Amount0" class="btn btn-default">删除库存为0的商品</button>
+        </div>  
+    </form>
+    <form class="form-inline" role="form" action="/inventoryQueryBootstrap/" method="get">  
+     <div class="form-group">
+        <p></p>
+        <button type="submit"  name="find0Amount1" class="btn btn-default">查询库存为0的货号</button>
+        
+        <button type="submit"  name="delete0Amount1" class="btn btn-default">删除库存为0的货号</button>
+        </div>  
+    </form>
      <br><label for="name" ><h4><p style="color: red;">{{error}}</p></h4></label></br>
-     <label for="name" ><h4><p style="color: red;">查询结果共计:{{totalAmount}}(件)</p></h4></label>
+     <label for="name" ><h4><p style="color: red;">{{showContext}}</p></h4></label>
 	</center>
 	
 	 <div class="row">

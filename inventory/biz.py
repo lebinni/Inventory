@@ -49,6 +49,29 @@ class InventoryBiz(object):
 
 		return inventorys
 		
+	def find0Inventory(self):
+		inventorys = None	
+		inventorys = Inventory.objects.filter(Amount__exact=0)
+		
+		return inventorys
+		
+	def find0InventoryForItemCode(self):
+		inventorys = None	
+		flag = False
+		code = None
+		inventorys = Inventory.objects.filter(Amount__exact=0)
+		inventorys0 = inventorys
+		for inv in inventorys:
+			inv1 = Inventory.objects.filter(ItemCode__exact=inv.ItemCode)
+			for inv11 in inv1:
+				if inv11.Amount != 0 and inv11 != None:
+					flag = True
+					code = inv11.ItemCode
+			if flag == True:
+				inventorys0 = inventorys0.exclude(ItemCode__exact=code)
+					
+		return inventorys0
+		
 	def updatingInventoryIn(self,inStockBill,inventory):
 		if (inventory.InventoryId == None):
 			inventory.Type = inStockBill.Type

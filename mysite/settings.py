@@ -60,18 +60,19 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(os.path.dirname(__file__), '../static').replace('\\','/')
+STATIC_ROOT = ''#os.path.join(os.path.dirname(__file__), '../static').replace('\\','/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
-
+import chartkick
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-	os.path.join(os.path.dirname(__file__), '../static').replace('\\','/')
+	#os.path.join(os.path.dirname(__file__), '../static').replace('\\','/')
+	chartkick.js(),
 
 )
 
@@ -132,6 +133,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 	'inventory',
     'bootstrap_toolkit',
+    'chartkick',
 )
 
 # A sample logging configuration. The only tangible logging

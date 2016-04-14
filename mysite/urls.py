@@ -50,5 +50,7 @@ urlpatterns = patterns('',
     url(r'^outBillBootstrap/$',views.outBillBootstrap),
     
     url(r'^statisticalAnalysis/$',views.statisticalAnalysis),
+    
+    url(r'^charts/$', views.charts),
 
 )

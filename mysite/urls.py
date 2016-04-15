@@ -51,6 +51,6 @@ urlpatterns = patterns('',
     
     url(r'^statisticalAnalysis/$',views.statisticalAnalysis),
     
-    url(r'^charts/$', views.charts),
+    #url(r'^charts/$', views.charts),
 
 )

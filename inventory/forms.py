@@ -79,7 +79,7 @@ class TypeForm(forms.Form):
 		
 		max_length = 12,
 		
-		label = u'类型:',
+		label = u'类别',
 		
 		error_messages={'required': u'必填项'},
 		)
@@ -135,7 +135,7 @@ class InStockBillForm(forms.Form):
 	
 	Type = forms.ModelChoiceField(
 		
-		label = u'类型:',
+		label = u'类别:',
 		
 		queryset = Type.objects.all(),
 		
@@ -161,6 +161,19 @@ class InStockBillForm(forms.Form):
 		queryset = Color.objects.all(),
 		
 		error_messages={'required': u'必填项'},
+		
+		)
+	
+	Flow = forms.ChoiceField(
+			
+		label = u'去向:',
+		
+		widget = forms.Select(), 
+		
+		choices = ([('','---------'),('1','进货'), ('2','退货'),('3','换货'), ]),
+		
+		error_messages={'required': u'必填项'},
+
 		
 		)
 
@@ -255,7 +268,7 @@ class OutStockBillForm(forms.Form):
 	
 	Type = forms.ModelChoiceField(
 		
-		label = u'类型:',
+		label = u'类别:',
 		
 		queryset = Type.objects.all(),
 		
@@ -281,6 +294,19 @@ class OutStockBillForm(forms.Form):
 		queryset = Color.objects.all(),
 		
 		error_messages={'required': u'必填项'},
+		
+		)
+	
+	Flow = forms.ChoiceField(
+			
+		label = u'去向:',
+		
+		widget = forms.Select(), 
+		
+		choices = ([('','---------'),('1','批发'), ('2','零售'),('3','换货'), ('4','退厂'),]),
+		
+		error_messages={'required': u'必填项'},
+
 		
 		)
 
